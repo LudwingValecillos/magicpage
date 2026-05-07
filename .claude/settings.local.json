@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm *)",
+      "PowerShell(npx --yes claude-code-templates@latest --skill creative-design/ui-ux-pro-max --yes 2>&1 | Out-String)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Out-String)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(npx next *)",
+      "Bash(npm install *)"
+    ]
+  }
+}
