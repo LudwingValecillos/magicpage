@@ -3,17 +3,23 @@
 /**
  * Floating glass navbar.
  * - Desktop: logo + primary nav + search + cart + Comprar CTA
- * - Mobile: logo + cart + hamburger (opens slide-down menu)
- * Becomes more opaque after scroll.
+ * - Mobile: logo + cart + hamburger
+ * Wires the search/cart/login overlays via the store.
  */
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { site } from "@/content/site";
+import { useStore } from "@/lib/store/StoreProvider";
+import { useCart } from "@/lib/store/useCart";
+import { useAuth } from "@/lib/store/useAuth";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { openSearch } = useStore();
+  const { open: openCart, count } = useCart();
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 32);
@@ -22,7 +28,17 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // close menu on route change (Link click) — handled by useState reset on click
+  // ⌘K / Ctrl+K → open search
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        openSearch();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [openSearch]);
 
   return (
     <header
@@ -33,7 +49,7 @@ export function Nav() {
       <div className="flex items-center justify-between px-3 md:px-6 py-2.5 md:py-3">
         {/* logo */}
         <Link href="/" className="flex items-center gap-2 group" onClick={() => setOpen(false)}>
-          <span className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-pink)] via-[var(--color-violet)] to-[var(--color-blue)] grid place-items-center text-base shadow-[0_0_20px_rgba(255,61,154,0.6)] group-hover:rotate-12 transition-transform duration-500">
+          <span className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-blue)] via-[var(--color-violet)] to-[var(--color-pink)] grid place-items-center text-base shadow-[0_0_24px_rgba(77,168,255,0.7)] group-hover:rotate-12 transition-transform duration-500">
             ✦
           </span>
           <span className="font-display text-lg md:text-xl tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
@@ -58,22 +74,36 @@ export function Nav() {
         <div className="flex items-center gap-1 md:gap-2">
           <button
             aria-label="Buscar"
+            onClick={openSearch}
             className="hidden md:grid w-10 h-10 rounded-full place-items-center text-[var(--color-ivory-dim)] hover:text-[var(--color-ivory)] hover:bg-white/5 transition-colors"
           >
             🔍
           </button>
           <button
             aria-label="Carrito"
+            onClick={openCart}
             className="relative w-10 h-10 rounded-full grid place-items-center text-[var(--color-ivory-dim)] hover:text-[var(--color-ivory)] hover:bg-white/5 transition-colors"
           >
             🛍
-            <span className="absolute -top-0.5 -right-0.5 min-w-5 h-5 rounded-full bg-[var(--color-pink)] text-[10px] font-bold text-white grid place-items-center px-1">
-              2
-            </span>
+            {count > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-5 h-5 rounded-full bg-[var(--color-blue)] text-[10px] font-bold text-white grid place-items-center px-1">
+                {count}
+              </span>
+            )}
           </button>
+
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="hidden md:inline-flex ml-2 px-4 py-2 rounded-full text-sm font-semibold glass-blue text-[var(--color-blue-soft)] border border-[var(--color-blue)]/40 hover:bg-[var(--color-blue)]/10 transition-colors"
+            >
+              Admin
+            </Link>
+          )}
+
           <Link
             href="/catalogo"
-            className="hidden md:inline-flex ml-2 px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-[var(--color-pink)] to-[var(--color-violet)] text-white shadow-[0_8px_24px_-8px_rgba(255,61,154,0.6)] hover:shadow-[0_12px_32px_-8px_rgba(138,91,255,0.7)] transition-shadow"
+            className="hidden md:inline-flex ml-1 px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-[var(--color-blue-deep)] to-[var(--color-blue)] text-white shadow-[0_8px_24px_-8px_rgba(77,168,255,0.7)] hover:shadow-[0_12px_32px_-8px_rgba(96,165,250,0.8)] transition-shadow"
           >
             Comprar
           </Link>
@@ -105,10 +135,19 @@ export function Nav() {
       {/* mobile menu */}
       <div
         className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-500 ${
-          open ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
+          open ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <nav className="flex flex-col gap-1 px-4 pb-4 pt-2">
+          <button
+            onClick={() => {
+              setOpen(false);
+              openSearch();
+            }}
+            className="px-4 py-3 rounded-2xl text-base text-[var(--color-ivory)] hover:bg-white/5 transition-colors text-left flex items-center gap-3"
+          >
+            <span>🔍</span> Buscar
+          </button>
           {site.nav.map((item) => (
             <Link
               key={item.href}
@@ -119,10 +158,19 @@ export function Nav() {
               {item.label}
             </Link>
           ))}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className="px-4 py-3 rounded-2xl text-base text-[var(--color-blue-soft)] hover:bg-[var(--color-blue)]/10 transition-colors"
+            >
+              👑 Panel admin
+            </Link>
+          )}
           <Link
             href="/catalogo"
             onClick={() => setOpen(false)}
-            className="mt-2 px-5 py-3 rounded-full text-center text-sm font-semibold bg-gradient-to-r from-[var(--color-pink)] via-[var(--color-violet)] to-[var(--color-blue)] text-white shadow-[0_8px_24px_-8px_rgba(255,61,154,0.6)]"
+            className="mt-2 px-5 py-3 rounded-full text-center text-sm font-semibold bg-gradient-to-r from-[var(--color-blue-deep)] via-[var(--color-violet)] to-[var(--color-pink)] text-white shadow-[0_8px_24px_-8px_rgba(77,168,255,0.7)]"
           >
             Comprar ahora
           </Link>

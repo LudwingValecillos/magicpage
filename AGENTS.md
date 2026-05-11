@@ -20,7 +20,7 @@ All data is mock data in `src/content/site.ts`.
 - **Language**: TypeScript (strict)
 - **Styling**: Tailwind CSS v4 (CSS-first config in `globals.css`, no `tailwind.config.ts`)
 - **Animation**: anime.js v4 (ESM — `animate`, `onScroll`, `stagger`)
-- **Fonts**: Fraunces (display), Plus Jakarta Sans (UI), JetBrains Mono (labels)
+- **Fonts**: Outfit (display), Plus Jakarta Sans (UI), JetBrains Mono (labels)
 
 ---
 
@@ -58,10 +58,12 @@ magic/
 │  │     ├─ Nav.tsx                  Floating glass navbar.
 │  │     ├─ Hero.tsx                 Fullscreen cinematic hero.
 │  │     ├─ Marquee.tsx              Brand ticker.
-│  │     ├─ Categories.tsx           Editorial category grid.
+│  │     ├─ Categories.tsx           Editorial category grid (8 universal cats).
+│  │     ├─ Brands.tsx               Licensed brand showcase (Marvel/Disney/Stitch/Frozen).
 │  │     ├─ Featured.tsx             6-product highlight grid.
 │  │     ├─ TopSellers.tsx           Horizontal snap carousel.
 │  │     ├─ PromoBanner.tsx          Cinematic full-width promo.
+│  │     ├─ Seasons.tsx              Halloween/Navidad/Verano/Colegio cards.
 │  │     ├─ StoreLocation.tsx        Physical-store storytelling block.
 │  │     ├─ Newsletter.tsx           Glass form.
 │  │     ├─ Footer.tsx               Premium colophon.
@@ -131,24 +133,28 @@ magic/
 
 ---
 
-## Aesthetic — "Magic Premium"
+## Aesthetic — "Magic Premium Infantil"
 
 Do not break this without an explicit instruction.
 
-- **Background**: deep purple-tinted ink `#0B0614`, never pure black. Body uses a fixed nebula gradient.
-- **Text**: warm ivory `#FBF7FF`, never pure white.
-- **Primary accents**: vibrant pink `#FF3D9A` + electric blue `#3DCBFF`.
-- **Supporting**: violet glow `#8A5BFF`, gold sparkle `#FFD66B`.
-- **Surfaces**: glassmorphism (`glass`, `glass-strong`).
-- **Lighting**: blurred glow orbs + animated gradient meshes + canvas particles.
-- **Typography**: large Fraunces display against tight Jakarta sans + mono labels.
-- **Motion**: smooth, never bouncy. Float for hero items. Parallax for emotional accents. One scroll-reveal per section element. No micro-interactions on every hover — only on cards, CTAs, nav.
+- **Background**: deep navy ink `#0B1020` → `#111827`, NEVER pure black. Body uses a fixed nebula gradient (blue + violet + pink radials).
+- **Text**: warm white `#F8FAFC`, NEVER pure white. Dim `#C7CEDF`, mute `#7E889F`.
+- **PRIMARY (dominant)**: electric blue `#4DA8FF` (`--color-blue`), deep `#3B82F6`, soft `#60A5FA`. Used for CTAs, highlights, default brand glow.
+- **ACCENT (sparingly)**: vibrant pink `#FF5FA2`, soft `#FF77C8`. Reserved for "hot"/promo/fantasy moments. Never dominant.
+- **Supporting**: violet `#8B5CF6`, gold `#FFD66B`.
+- **Brand glows** per licensed character (`tokens.ts → brandGlow`): Marvel `#FF3B3B`, Disney `#4DA8FF`, Stitch `#5BC0EB`, Frozen `#9DD0FF`, Pixar `#FFB84D`, LEGO `#FFD93D`, Nintendo `#E60012`.
+- **Surfaces**: glassmorphism (`.glass`, `.glass-strong`, `.glass-blue`).
+- **Lighting**: blurred `<GlowOrb>` + animated `<GradientMesh>` + canvas `<ParticleField>`.
+- **Typography**: Outfit display bold/cinematic against Plus Jakarta sans body + tiny JetBrains mono labels. Headlines should be giant, tightly tracked.
+- **Motion**: smooth, premium, never bouncy. Float for hero items. Parallax for emotional accents. One scroll-reveal per section. No micro-interactions on every hover — only on cards, CTAs, nav.
+
+Reference brand tone: Disney+ / Nike Kids / LEGO modern / Nintendo / Pixar. **Never** generic Shopify, never plain white background, never bare cards.
 
 ---
 
 ## Routes
 
-- `/` → Home (Nav + Hero + Marquee + Categories + Featured + PromoBanner + TopSellers + StoreLocation + Newsletter + Footer)
+- `/` → Home (Nav + Hero + Marquee + Categories + Brands + Featured + PromoBanner + TopSellers + Seasons + StoreLocation + Newsletter + Footer)
 - `/catalogo` → CatalogView (filterable grid)
 - `/producto/[slug]` → ProductDetail (gallery + info + related)
 

@@ -2,8 +2,8 @@
 
 /**
  * ProductDetail — premium product page.
- * Layout: cinematic gallery (left) + info panel (right).
- * Below: details accordion + related products grid.
+ * Now driven by the store: looks up product by slug from useProducts().
+ * Gallery cycles through product.images[] (or falls back to emoji).
  */
 
 import { useState } from "react";
@@ -15,17 +15,50 @@ import { GlowOrb } from "@/components/visual/GlowOrb";
 import { Badge } from "@/components/ui/Badge";
 import { MagicButton } from "@/components/ui/MagicButton";
 import { ProductCard } from "@/components/ui/ProductCard";
-import type { Product } from "@/content/site";
+import { useProducts } from "@/lib/store/useProducts";
+import { useCart } from "@/lib/store/useCart";
+import { useStore } from "@/lib/store/StoreProvider";
 
-interface ProductDetailProps {
-  product: Product;
-  related: Product[];
-}
-
-export function ProductDetail({ product, related }: ProductDetailProps) {
+export function ProductDetail({ slug }: { slug: string }) {
+  const { ready } = useStore();
+  const { findBySlug, visible } = useProducts();
+  const { add, open: openCart } = useCart();
   const [qty, setQty] = useState(1);
   const [thumb, setThumb] = useState(0);
-  const thumbs = [product.icon, "✦", "♥", "★"];
+
+  if (!ready) {
+    return (
+      <div className="min-h-[60vh] grid place-items-center">
+        <span className="text-[var(--color-ivory-mute)] text-sm font-mono uppercase tracking-widest">Cargando...</span>
+      </div>
+    );
+  }
+
+  const product = findBySlug(slug);
+
+  if (!product) {
+    return (
+      <div className="min-h-[60vh] grid place-items-center px-6 text-center">
+        <div>
+          <span className="text-6xl">✦</span>
+          <h1 className="display text-4xl mt-4">Producto no encontrado</h1>
+          <p className="mt-3 text-[var(--color-ivory-dim)]">El producto &ldquo;{slug}&rdquo; no existe o fue desactivado.</p>
+          <div className="mt-8">
+            <MagicButton href="/catalogo" variant="primary">Ver catálogo</MagicButton>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const related = visible.filter((p) => p.categorySlug === product.categorySlug && p.slug !== product.slug).slice(0, 4);
+  const images = product.images.length ? product.images : [];
+  const hasImages = images.length > 0;
+
+  const handleAdd = () => {
+    add(product.slug, qty);
+    openCart();
+  };
 
   return (
     <article
@@ -58,22 +91,32 @@ export function ProductDetail({ product, related }: ProductDetailProps) {
             }}
           >
             <ParticleField density={40} hue="mixed" />
-            <GlowOrb className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" color="violet" size={460} blur={140} opacity={0.45} />
+            <GlowOrb className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" color="blue" size={460} blur={140} opacity={0.4} />
 
-            <div className="absolute inset-0 grid place-items-center">
-              <div
-                className="w-44 h-44 sm:w-56 sm:h-56 md:w-72 md:h-72 rounded-full grid place-items-center text-7xl sm:text-8xl md:text-9xl float-slow"
-                style={{
-                  background: `radial-gradient(circle at 30% 30%, ${product.accent}, ${product.accent}66)`,
-                  boxShadow: `0 30px 100px -10px ${product.accent}aa, inset 0 -30px 60px rgba(0,0,0,0.35)`,
-                }}
-              >
-                <span style={{ filter: `drop-shadow(0 8px 20px ${product.accent})` }}>{thumbs[thumb]}</span>
+            {hasImages ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={images[thumb]}
+                alt={product.name}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 grid place-items-center">
+                <div
+                  className="w-44 h-44 sm:w-56 sm:h-56 md:w-72 md:h-72 rounded-full grid place-items-center text-7xl sm:text-8xl md:text-9xl float-slow"
+                  style={{
+                    background: `radial-gradient(circle at 30% 30%, ${product.accent}, ${product.accent}66)`,
+                    boxShadow: `0 30px 100px -10px ${product.accent}aa, inset 0 -30px 60px rgba(0,0,0,0.35)`,
+                  }}
+                >
+                  <span style={{ filter: `drop-shadow(0 8px 20px ${product.accent})` }}>{product.icon}</span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* badges */}
             <div className="absolute top-6 left-6 flex flex-col gap-2">
+              {product.onSale && product.oldPrice && <Badge variant="sale">Oferta</Badge>}
               {product.badges?.map((b) => (
                 <Badge key={b} variant={b}>
                   {b === "new" ? "Nuevo" : b === "hot" ? "Top" : b === "sale" ? "Oferta" : "Exclusivo"}
@@ -82,21 +125,23 @@ export function ProductDetail({ product, related }: ProductDetailProps) {
             </div>
           </div>
 
-          {/* thumbnails */}
-          <div className="mt-4 grid grid-cols-4 gap-3">
-            {thumbs.map((t, i) => (
-              <button
-                key={i}
-                onClick={() => setThumb(i)}
-                className={`aspect-square rounded-[var(--radius-md)] grid place-items-center text-3xl glass transition-all ${
-                  thumb === i ? "border-2 border-[var(--color-pink)] glow-pink" : "hover:bg-white/10"
-                }`}
-                style={{ borderColor: thumb === i ? product.accent : undefined }}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
+          {/* thumbnails (only when images exist) */}
+          {hasImages && images.length > 1 && (
+            <div className="mt-4 grid grid-cols-4 gap-3">
+              {images.slice(0, 4).map((src, i) => (
+                <button
+                  key={i}
+                  onClick={() => setThumb(i)}
+                  className={`aspect-square rounded-[var(--radius-md)] overflow-hidden glass transition-all ${
+                    thumb === i ? "ring-2 ring-[var(--color-blue)] glow-blue" : "hover:bg-white/10"
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </Reveal>
 
         {/* info */}
@@ -119,11 +164,11 @@ export function ProductDetail({ product, related }: ProductDetailProps) {
               <span className="text-xs font-mono text-[var(--color-ivory-mute)]">128 reseñas</span>
             </div>
 
-            <div className="mt-8 flex items-baseline gap-3">
+            <div className="mt-8 flex items-baseline gap-3 flex-wrap">
               <span className="font-display text-5xl gradient-text" style={{ fontFamily: "var(--font-display)" }}>
                 ${product.price.toLocaleString()}
               </span>
-              {product.oldPrice && (
+              {product.onSale && product.oldPrice && (
                 <span className="text-lg text-[var(--color-ivory-mute)] line-through">
                   ${product.oldPrice.toLocaleString()}
                 </span>
@@ -151,7 +196,7 @@ export function ProductDetail({ product, related }: ProductDetailProps) {
                   +
                 </button>
               </div>
-              <MagicButton variant="primary" size="lg" className="flex-1" icon={<span>🛍</span>}>
+              <MagicButton variant="primary" size="lg" className="flex-1" onClick={handleAdd} icon={<span>🛍</span>}>
                 Agregar al carrito
               </MagicButton>
             </div>
@@ -168,13 +213,12 @@ export function ProductDetail({ product, related }: ProductDetailProps) {
               <ul className="flex flex-col gap-2">
                 {product.details.map((d) => (
                   <li key={d} className="flex items-center gap-3 text-sm text-[var(--color-ivory-dim)]">
-                    <span className="text-[var(--color-pink)]">✦</span> {d}
+                    <span className="text-[var(--color-blue)]">✦</span> {d}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* shipping chips */}
             <div className="mt-8 grid grid-cols-3 gap-2">
               <Chip icon="🚚" label="Envío" value="24-48hs" />
               <Chip icon="↺" label="Cambio" value="30 días" />
@@ -184,7 +228,6 @@ export function ProductDetail({ product, related }: ProductDetailProps) {
         </div>
       </div>
 
-      {/* related */}
       {related.length > 0 && (
         <section className="mt-32">
           <Reveal y={32} className="mb-10">

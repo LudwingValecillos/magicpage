@@ -1,15 +1,16 @@
 "use client";
 
 /**
- * TopSellers — horizontal snap carousel of best-selling products.
+ * TopSellers — horizontal snap carousel from store.
  */
 
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { site } from "@/content/site";
+import { useProducts } from "@/lib/store/useProducts";
 
 export function TopSellers() {
-  const items = site.products.slice(3, 12);
+  const { visible } = useProducts();
+  const items = visible.slice(3, 12);
 
   return (
     <section
@@ -17,7 +18,10 @@ export function TopSellers() {
       className="relative py-[var(--section)]"
       style={{ ["--section" as string]: "clamp(3.5rem, 10vh, 9rem)" } as React.CSSProperties}
     >
-      <div className="px-[var(--gutter)] mb-10" style={{ ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)" } as React.CSSProperties}>
+      <div
+        className="px-[var(--gutter)] mb-10"
+        style={{ ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)" } as React.CSSProperties}
+      >
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <Reveal y={32} className="max-w-2xl">
             <span className="eyebrow">Top vendidos</span>
@@ -34,8 +38,10 @@ export function TopSellers() {
       </div>
 
       <Reveal y={48}>
-        <div className="flex gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pl-[var(--gutter)] pr-[var(--gutter)] pb-6"
-             style={{ ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)" } as React.CSSProperties}>
+        <div
+          className="flex gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pl-[var(--gutter)] pr-[var(--gutter)] pb-6"
+          style={{ ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)" } as React.CSSProperties}
+        >
           {items.map((p) => (
             <div key={p.slug} className="snap-start shrink-0 w-[18rem] md:w-[22rem]">
               <ProductCard product={p} />

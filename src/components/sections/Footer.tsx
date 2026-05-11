@@ -18,7 +18,7 @@ export function Footer() {
         {/* brand */}
         <div className="col-span-2">
           <Link href="/" className="inline-flex items-center gap-2 group">
-            <span className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-pink)] via-[var(--color-violet)] to-[var(--color-blue)] grid place-items-center text-lg shadow-[0_0_24px_rgba(255,61,154,0.6)] group-hover:rotate-12 transition-transform">
+            <span className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-blue)] via-[var(--color-violet)] to-[var(--color-pink)] grid place-items-center text-lg shadow-[0_0_24px_rgba(77,168,255,0.7)] group-hover:rotate-12 transition-transform">
               ✦
             </span>
             <span className="font-display text-2xl tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
@@ -53,7 +53,7 @@ export function Footer() {
                 <li key={l.label}>
                   <Link
                     href={l.href}
-                    className="text-sm text-[var(--color-ivory-dim)] hover:text-[var(--color-pink)] transition-colors"
+                    className="text-sm text-[var(--color-ivory-dim)] hover:text-[var(--color-blue)] transition-colors"
                   >
                     {l.label}
                   </Link>
@@ -69,7 +69,7 @@ export function Footer() {
           {site.footer.legal}
         </span>
         <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
-          Hecho con <span className="text-[var(--color-pink)]">♥</span> en 2026
+          Hecho con <span className="text-[var(--color-blue)]">♥</span> en 2026
         </span>
       </Reveal>
     </footer>

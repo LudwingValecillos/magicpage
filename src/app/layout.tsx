@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
-import { Fraunces, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { StoreProvider } from "@/lib/store/StoreProvider";
+import { CartDrawer } from "@/components/overlays/CartDrawer";
+import { SearchModal } from "@/components/overlays/SearchModal";
+import { LoginModal } from "@/components/overlays/LoginModal";
 
-const fraunces = Fraunces({
+const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["300", "400", "600", "700"],
-  variable: "--font-fraunces",
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -32,9 +36,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="es"
-      className={`${fraunces.variable} ${jakarta.variable} ${jetbrains.variable}`}
+      className={`${outfit.variable} ${jakarta.variable} ${jetbrains.variable}`}
     >
-      <body className="noise antialiased" suppressHydrationWarning>{children}</body>
+      <body className="noise antialiased" suppressHydrationWarning>
+        <StoreProvider>
+          {children}
+          <CartDrawer />
+          <SearchModal />
+          <LoginModal />
+        </StoreProvider>
+      </body>
     </html>
   );
 }

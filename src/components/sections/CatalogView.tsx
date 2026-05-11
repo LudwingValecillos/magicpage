@@ -1,25 +1,27 @@
 "use client";
 
 /**
- * CatalogView — interactive catalog with sidebar filters + product grid.
- * Filters: category, sort. Mock data only (no real backend).
+ * CatalogView — interactive catalog. Reads products + categories from the
+ * store (LocalStorageAdapter today, Supabase later) so admin edits are live.
  */
 
 import { useMemo, useState } from "react";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { GradientMesh } from "@/components/visual/GradientMesh";
-import { site, type Product } from "@/content/site";
+import { useProducts } from "@/lib/store/useProducts";
+import type { Product } from "@/lib/store/types";
 
 type Sort = "destacado" | "precio-asc" | "precio-desc" | "rating";
 
 export function CatalogView() {
+  const { visible: products, categories } = useProducts();
   const [active, setActive] = useState<string | "todo">("todo");
   const [sort, setSort] = useState<Sort>("destacado");
   const [query, setQuery] = useState("");
 
   const filtered = useMemo<Product[]>(() => {
-    let list: Product[] = [...site.products];
+    let list: Product[] = [...products];
     if (active !== "todo") list = list.filter((p) => p.categorySlug === active);
     if (query.trim()) {
       const q = query.toLowerCase();
@@ -31,7 +33,7 @@ export function CatalogView() {
       case "rating": list.sort((a, b) => b.rating - a.rating); break;
     }
     return list;
-  }, [active, sort, query]);
+  }, [active, sort, query, products]);
 
   return (
     <section
@@ -72,12 +74,12 @@ export function CatalogView() {
         </Reveal>
       </div>
 
-      {/* mobile filter chips — horizontal scroll */}
+      {/* mobile filter chips */}
       <div className="lg:hidden -mx-[var(--gutter)] mb-6 px-[var(--gutter)] overflow-x-auto no-scrollbar">
         <div className="flex gap-2 w-max">
           <ChipFilter label="Todo" active={active === "todo"} onClick={() => setActive("todo")} />
-          {site.categories.map((c) => {
-            const count = site.products.filter((p) => p.categorySlug === c.slug).length;
+          {categories.map((c) => {
+            const count = products.filter((p) => p.categorySlug === c.slug).length;
             if (count === 0) return null;
             return (
               <ChipFilter
@@ -99,9 +101,9 @@ export function CatalogView() {
               Categorías
             </h3>
             <ul className="flex flex-col gap-1">
-              <FilterItem label="Todo" count={site.products.length} active={active === "todo"} onClick={() => setActive("todo")} />
-              {site.categories.map((c) => {
-                const count = site.products.filter((p) => p.categorySlug === c.slug).length;
+              <FilterItem label="Todo" count={products.length} active={active === "todo"} onClick={() => setActive("todo")} />
+              {categories.map((c) => {
+                const count = products.filter((p) => p.categorySlug === c.slug).length;
                 if (count === 0) return null;
                 return (
                   <FilterItem
@@ -120,7 +122,7 @@ export function CatalogView() {
                 Resultados
               </h3>
               <div className="flex items-end gap-2">
-                <span className="font-display text-4xl gradient-text" style={{ fontFamily: "var(--font-display)" }}>
+                <span className="font-display text-4xl gradient-text-blue" style={{ fontFamily: "var(--font-display)" }}>
                   {filtered.length}
                 </span>
                 <span className="text-sm text-[var(--color-ivory-dim)] mb-1">productos</span>
@@ -131,7 +133,6 @@ export function CatalogView() {
 
         {/* grid */}
         <div className="lg:col-span-9">
-          {/* mobile result count */}
           <div className="lg:hidden mb-4 text-xs font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
             {filtered.length} producto{filtered.length === 1 ? "" : "s"}
           </div>
@@ -162,7 +163,7 @@ function ChipFilter({ label, active, onClick }: { label: string; active: boolean
       onClick={onClick}
       className={`shrink-0 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
         active
-          ? "bg-gradient-to-r from-[var(--color-pink)] to-[var(--color-violet)] text-white shadow-[0_4px_16px_-4px_rgba(255,61,154,0.5)]"
+          ? "bg-gradient-to-r from-[var(--color-blue-deep)] to-[var(--color-blue)] text-white shadow-[0_4px_16px_-4px_rgba(77,168,255,0.6)]"
           : "glass text-[var(--color-ivory-dim)] hover:text-[var(--color-ivory)]"
       }`}
     >
@@ -178,7 +179,7 @@ function FilterItem({ label, count, active, onClick }: { label: string; count: n
         onClick={onClick}
         className={`w-full flex items-center justify-between px-4 py-2.5 rounded-full text-sm transition-all ${
           active
-            ? "bg-gradient-to-r from-[var(--color-pink)]/20 to-[var(--color-violet)]/20 text-[var(--color-ivory)] border border-[var(--color-pink)]/30"
+            ? "bg-gradient-to-r from-[var(--color-blue)]/20 to-[var(--color-violet)]/20 text-[var(--color-ivory)] border border-[var(--color-blue)]/40"
             : "text-[var(--color-ivory-dim)] hover:text-[var(--color-ivory)] hover:bg-white/5"
         }`}
       >

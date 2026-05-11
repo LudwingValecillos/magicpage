@@ -19,7 +19,7 @@ export function Newsletter() {
     >
       <Reveal y={48}>
         <div className="relative max-w-4xl mx-auto rounded-[var(--radius-xl)] glass-strong px-8 py-14 md:p-16 text-center overflow-hidden">
-          <GlowOrb className="absolute -top-32 left-1/2 -translate-x-1/2" color="violet" size={400} blur={140} opacity={0.55} />
+          <GlowOrb className="absolute -top-32 left-1/2 -translate-x-1/2" color="blue" size={400} blur={140} opacity={0.55} />
 
           <div className="relative z-10 flex flex-col items-center">
             <span className="eyebrow">{site.newsletter.eyebrow}</span>
@@ -39,7 +39,7 @@ export function Newsletter() {
               />
               <button
                 type="submit"
-                className="px-6 py-3 rounded-full font-semibold text-white bg-gradient-to-r from-[var(--color-pink)] via-[var(--color-violet)] to-[var(--color-blue)] shadow-[0_8px_24px_-8px_rgba(255,61,154,0.6)] hover:shadow-[0_12px_36px_-8px_rgba(138,91,255,0.7)] transition-shadow"
+                className="px-6 py-3 rounded-full font-semibold text-white bg-gradient-to-r from-[var(--color-blue-deep)] via-[var(--color-blue)] to-[var(--color-violet)] shadow-[0_8px_24px_-8px_rgba(77,168,255,0.7)] hover:shadow-[0_12px_36px_-8px_rgba(96,165,250,0.85)] transition-shadow"
               >
                 {site.newsletter.cta} →
               </button>

@@ -46,7 +46,7 @@ export function PromoBanner() {
               <div
                 className="w-44 h-44 sm:w-56 sm:h-56 md:w-72 md:h-72 rounded-full grid place-items-center spin-slow"
                 style={{
-                  background: "conic-gradient(from 0deg, #FF3D9A, #8A5BFF, #3DCBFF, #FF3D9A)",
+                  background: "conic-gradient(from 0deg, #4DA8FF, #8B5CF6, #FF5FA2, #4DA8FF)",
                   filter: "blur(0.5px)",
                 }}
               >

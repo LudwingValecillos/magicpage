@@ -31,18 +31,19 @@ export function Hero() {
       <GradientMesh />
       <ParticleField density={70} hue="mixed" />
 
-      {/* ambient glow orbs (always on) */}
-      <GlowOrb className="absolute top-[18%] -left-32" color="violet" size={420} blur={140} opacity={0.55} />
-      <GlowOrb className="absolute bottom-[10%] -right-32" color="pink" size={360} blur={140} opacity={0.5} />
+      {/* ambient glow orbs (always on) — blue dominant */}
+      <GlowOrb className="absolute top-[18%] -left-32" color="blue" size={460} blur={150} opacity={0.55} />
+      <GlowOrb className="absolute bottom-[10%] -right-32" color="violet" size={380} blur={140} opacity={0.45} />
+      <GlowOrb className="absolute top-[60%] left-[40%]" color="pink" size={280} blur={140} opacity={0.25} />
 
-      {/* floating product orbs — desktop only, 3 max, well-spaced corners */}
+      {/* floating product orbs — desktop only */}
       <FloatingItem
         className="absolute top-[18%] left-[6%] hidden lg:block"
         delay="0s"
         speed="slow"
         parallax={60}
       >
-        <ProductOrb color="#FF5252" emoji="🛡️" size={130} />
+        <ProductOrb color="#4DA8FF" emoji="🏰" size={140} />
       </FloatingItem>
 
       <FloatingItem
@@ -51,7 +52,7 @@ export function Hero() {
         speed="fast"
         parallax={80}
       >
-        <ProductOrb color="#3DCBFF" emoji="🏰" size={150} />
+        <ProductOrb color="#FF3B3B" emoji="🛡️" size={130} />
       </FloatingItem>
 
       <FloatingItem
@@ -60,7 +61,7 @@ export function Hero() {
         speed="slow"
         parallax={50}
       >
-        <ProductOrb color="#FFD66B" emoji="🪄" size={110} />
+        <ProductOrb color="#FF5FA2" emoji="🪄" size={110} />
       </FloatingItem>
 
       <FloatingItem
@@ -69,7 +70,7 @@ export function Hero() {
         speed="fast"
         parallax={70}
       >
-        <ProductOrb color="#7BE0FF" emoji="🧸" size={120} />
+        <ProductOrb color="#5BC0EB" emoji="🧸" size={120} />
       </FloatingItem>
 
       {/* text */}

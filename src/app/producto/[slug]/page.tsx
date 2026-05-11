@@ -1,39 +1,26 @@
-import { notFound } from "next/navigation";
 import { Nav } from "@/components/sections/Nav";
 import { Footer } from "@/components/sections/Footer";
 import { ProductDetail } from "@/components/sections/ProductDetail";
-import { site } from "@/content/site";
 
-export function generateStaticParams() {
-  return site.products.map((p) => ({ slug: p.slug }));
-}
+/**
+ * Product page — fully dynamic so admin-added products work without a rebuild.
+ * The actual product lookup happens client-side in <ProductDetail> via useProducts().
+ */
 
 type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
-  const product = site.products.find((p) => p.slug === slug);
-  if (!product) return { title: "Producto — Magic" };
-  return {
-    title: `${product.name} — Magic`,
-    description: product.description,
-  };
+  return { title: `${slug} — Magic` };
 }
 
 export default async function ProductPage({ params }: { params: Params }) {
   const { slug } = await params;
-  const product = site.products.find((p) => p.slug === slug);
-  if (!product) notFound();
-
-  const related = site.products
-    .filter((p) => p.categorySlug === product.categorySlug && p.slug !== product.slug)
-    .slice(0, 4);
-
   return (
     <>
       <Nav />
       <main className="pt-32">
-        <ProductDetail product={product} related={related} />
+        <ProductDetail slug={slug} />
       </main>
       <Footer />
     </>

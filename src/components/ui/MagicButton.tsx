@@ -35,16 +35,16 @@ export function MagicButton({
 
   const styles = {
     primary: `relative overflow-hidden rounded-full font-semibold text-white
-              bg-gradient-to-r from-[var(--color-pink)] via-[var(--color-violet)] to-[var(--color-blue)]
+              bg-gradient-to-r from-[var(--color-blue-deep)] via-[var(--color-blue)] to-[var(--color-violet)]
               bg-[length:200%_100%] hover:bg-[position:100%_0%]
-              shadow-[0_8px_32px_-8px_rgba(255,61,154,0.6)]
-              hover:shadow-[0_16px_48px_-8px_rgba(138,91,255,0.7)]
+              shadow-[0_8px_32px_-8px_rgba(77,168,255,0.7)]
+              hover:shadow-[0_16px_48px_-8px_rgba(96,165,250,0.85)]
               transition-all duration-500`,
     ghost: `relative rounded-full font-medium glass text-[var(--color-ivory)]
-            hover:bg-white/10 transition-all duration-300`,
+            hover:bg-white/10 hover:border-[var(--color-blue)]/30 transition-all duration-300`,
     link: `relative inline-flex items-center gap-2 font-medium text-[var(--color-ivory)]
            after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full
-           after:bg-gradient-to-r after:from-[var(--color-pink)] after:to-[var(--color-blue)]
+           after:bg-gradient-to-r after:from-[var(--color-blue)] after:to-[var(--color-pink)]
            after:scale-x-0 after:origin-left hover:after:scale-x-100
            after:transition-transform after:duration-500`,
   };

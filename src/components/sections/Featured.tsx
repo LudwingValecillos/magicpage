@@ -1,16 +1,17 @@
 "use client";
 
 /**
- * Featured — hero-grid of 6 highlighted products.
+ * Featured — top 6 visible products (admin-managed via store).
  */
 
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { MagicButton } from "@/components/ui/MagicButton";
-import { site } from "@/content/site";
+import { useProducts } from "@/lib/store/useProducts";
 
 export function Featured() {
-  const items = site.products.slice(0, 6);
+  const { visible } = useProducts();
+  const items = visible.slice(0, 6);
 
   return (
     <section

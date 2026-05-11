@@ -26,13 +26,13 @@ export function StoreLocation() {
         <div className="lg:col-span-7 relative">
           <Reveal y={64}>
             <div className="relative aspect-[4/3] rounded-[var(--radius-xl)] overflow-hidden glass-strong">
-              <GlowOrb className="absolute -top-20 -left-20" color="pink" size={300} blur={120} opacity={0.6} />
-              <GlowOrb className="absolute -bottom-20 -right-20" color="blue" size={300} blur={120} opacity={0.5} />
+              <GlowOrb className="absolute -top-20 -left-20" color="blue" size={320} blur={130} opacity={0.6} />
+              <GlowOrb className="absolute -bottom-20 -right-20" color="pink" size={260} blur={130} opacity={0.4} />
 
               {/* stylized storefront */}
               <div className="absolute inset-0 grid place-items-center">
                 <div className="relative">
-                  <div className="text-[8rem] sm:text-[12rem] md:text-[16rem] leading-none drop-shadow-[0_20px_40px_rgba(255,61,154,0.5)]">🏪</div>
+                  <div className="text-[8rem] sm:text-[12rem] md:text-[16rem] leading-none drop-shadow-[0_20px_40px_rgba(77,168,255,0.5)]">🏪</div>
                   <ParallaxText className="absolute -top-4 -right-4 md:-top-8 md:-right-8" distance={60}>
                     <span className="text-3xl sm:text-5xl md:text-6xl float-slow">✦</span>
                   </ParallaxText>
