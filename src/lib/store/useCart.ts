@@ -1,9 +1,8 @@
 "use client";
 
 /**
- * useCart — add/remove/update qty and read totals.
- * Cart items reference product by slug; the hook joins with the live
- * product list to compute prices.
+ * useCart — add/remove/qty + totales.
+ * Cart guarda solo (slug, qty); se joinea con products para calcular precios.
  */
 
 import { useCallback, useMemo } from "react";
@@ -26,7 +25,7 @@ export function useCart() {
 
   const count = useMemo(() => cart.reduce((a, ci) => a + ci.qty, 0), [cart]);
   const subtotal = useMemo(
-    () => items.reduce((a, it) => a + it.product.price * it.qty, 0),
+    () => items.reduce((a, it) => a + it.product.precio * it.qty, 0),
     [items],
   );
 
@@ -61,5 +60,16 @@ export function useCart() {
 
   const clear = useCallback(async () => setCart([]), [setCart]);
 
-  return { items, count, subtotal, add, setQty, remove, clear, open: openCart, close: closeCart, isOpen: cartOpen };
+  return {
+    items,
+    count,
+    subtotal,
+    add,
+    setQty,
+    remove,
+    clear,
+    open: openCart,
+    close: closeCart,
+    isOpen: cartOpen,
+  };
 }

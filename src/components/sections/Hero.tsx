@@ -1,159 +1,110 @@
 "use client";
 
 /**
- * Hero — fullscreen, cinematic.
- * Layers: gradient mesh → particles → ambient glow orbs → 3 floating product
- * orbs (desktop only) → text. Uses anime.js mount sequence for staggered
- * reveal. Mobile hides the floating orbs entirely so the text breathes.
+ * Hero — light playful. Soft gradient bg + floating emoji illustrations + copy + CTAs.
+ * No canvas. Pure CSS animations (float-soft + pulse-soft).
  */
 
-import { useEffect, useRef } from "react";
-import { playHeroIntro } from "@/lib/anime/sequences";
-import { GradientMesh } from "@/components/visual/GradientMesh";
-import { ParticleField } from "@/components/visual/ParticleField";
-import { FloatingItem } from "@/components/visual/FloatingItem";
-import { GlowOrb } from "@/components/visual/GlowOrb";
+import { Reveal } from "@/components/Reveal";
 import { MagicButton } from "@/components/ui/MagicButton";
 import { site } from "@/content/site";
 
+const FLOATIES = [
+  { emoji: "🦸", color: "#ff6baa", className: "top-[12%] left-[6%] hidden md:block",  size: 96,  delay: "0s" },
+  { emoji: "🏰", color: "#3db5e0", className: "top-[18%] right-[8%] hidden md:block", size: 108, delay: "-1.5s" },
+  { emoji: "🧸", color: "#ffd93d", className: "bottom-[14%] left-[10%] hidden md:block", size: 88, delay: "-3s" },
+  { emoji: "🪄", color: "#8b5cf6", className: "bottom-[20%] right-[12%] hidden lg:block", size: 92, delay: "-4.5s" },
+  { emoji: "⚡", color: "#ff8866", className: "top-[40%] left-[3%] hidden lg:block", size: 72, delay: "-2s" },
+  { emoji: "🛡️", color: "#6bcb77", className: "top-[55%] right-[4%] hidden lg:block", size: 72, delay: "-3.5s" },
+];
+
 export function Hero() {
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    if (ref.current) playHeroIntro(ref.current);
-  }, []);
-
   return (
-    <section
-      ref={ref}
-      className="relative min-h-[100vh] md:min-h-[110vh] flex flex-col items-center justify-center overflow-hidden pt-28 md:pt-32 pb-20 md:pb-24 px-5 md:px-6"
+    <section className="relative overflow-hidden pt-32 md:pt-40 pb-20 md:pb-28 px-[var(--gutter)]"
+      style={{ ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)" } as React.CSSProperties}
     >
-      <GradientMesh />
-      <ParticleField density={70} hue="mixed" />
+      {/* soft gradient blobs */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-[var(--color-sky-soft)]/40 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[30rem] h-[30rem] rounded-full bg-[var(--color-pink-soft)]/40 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 w-[22rem] h-[22rem] rounded-full bg-[var(--color-yellow)]/25 blur-3xl" />
 
-      {/* ambient glow orbs (always on) — blue dominant */}
-      <GlowOrb className="absolute top-[18%] -left-32" color="blue" size={460} blur={150} opacity={0.55} />
-      <GlowOrb className="absolute bottom-[10%] -right-32" color="violet" size={380} blur={140} opacity={0.45} />
-      <GlowOrb className="absolute top-[60%] left-[40%]" color="pink" size={280} blur={140} opacity={0.25} />
-
-      {/* floating product orbs — desktop only */}
-      <FloatingItem
-        className="absolute top-[18%] left-[6%] hidden lg:block"
-        delay="0s"
-        speed="slow"
-        parallax={60}
-      >
-        <ProductOrb color="#4DA8FF" emoji="🏰" size={140} />
-      </FloatingItem>
-
-      <FloatingItem
-        className="absolute top-[22%] right-[7%] hidden lg:block"
-        delay="-3s"
-        speed="fast"
-        parallax={80}
-      >
-        <ProductOrb color="#FF3B3B" emoji="🛡️" size={130} />
-      </FloatingItem>
-
-      <FloatingItem
-        className="absolute bottom-[16%] left-[10%] hidden lg:block"
-        delay="-1.5s"
-        speed="slow"
-        parallax={50}
-      >
-        <ProductOrb color="#FF5FA2" emoji="🪄" size={110} />
-      </FloatingItem>
-
-      <FloatingItem
-        className="absolute bottom-[20%] right-[9%] hidden xl:block"
-        delay="-4s"
-        speed="fast"
-        parallax={70}
-      >
-        <ProductOrb color="#5BC0EB" emoji="🧸" size={120} />
-      </FloatingItem>
-
-      {/* text */}
-      <div className="relative z-10 max-w-5xl text-center flex flex-col items-center gap-6 md:gap-8">
-        <span data-hero="eyebrow" className="opacity-0 eyebrow text-[0.65rem] md:text-xs">
-          {site.hero.eyebrow}
-        </span>
-
-        <h1 className="display text-[clamp(2.75rem,11vw,9rem)] tracking-tight">
-          {site.hero.headline.map((line, i) => {
-            const isMid = i === 1;
-            return (
-              <span
-                key={i}
-                data-hero="line"
-                className={`block opacity-0 will-change-transform ${isMid ? "gradient-text" : "text-[var(--color-ivory)]"}`}
-              >
-                {line}
-                {i === site.hero.headline.length - 1 && <span className="text-[var(--color-pink)]">.</span>}
-              </span>
-            );
-          })}
-        </h1>
-
-        <p
-          data-hero="meta"
-          className="opacity-0 max-w-md md:max-w-xl text-sm md:text-lg text-[var(--color-ivory-dim)] leading-relaxed px-2"
+      {/* floating emoji bubbles */}
+      {FLOATIES.map((f, i) => (
+        <div
+          key={i}
+          className={`pointer-events-none absolute ${f.className} float-soft`}
+          style={{ animationDelay: f.delay }}
         >
-          {site.hero.sub}
-        </p>
-
-        <div data-hero="meta" className="opacity-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mt-2 w-full sm:w-auto">
-          <MagicButton href={site.hero.primaryCta.href} variant="primary" size="lg" icon={<span>→</span>}>
-            {site.hero.primaryCta.label}
-          </MagicButton>
-          <MagicButton href={site.hero.secondaryCta.href} variant="ghost" size="lg">
-            {site.hero.secondaryCta.label}
-          </MagicButton>
+          <div
+            className="rounded-full grid place-items-center shadow-[var(--shadow-soft)]"
+            style={{
+              width: f.size,
+              height: f.size,
+              background: `radial-gradient(circle at 30% 30%, ${f.color}55, ${f.color}22), white`,
+              border: `2px solid ${f.color}44`,
+            }}
+          >
+            <span
+              style={{
+                fontSize: f.size * 0.55,
+                filter: `drop-shadow(0 4px 10px ${f.color}88)`,
+              }}
+            >
+              {f.emoji}
+            </span>
+          </div>
         </div>
+      ))}
 
-        {/* stats */}
-        <div data-hero="meta" className="opacity-0 mt-8 md:mt-12 flex items-center gap-6 sm:gap-10 md:gap-16 glass rounded-full px-5 sm:px-8 py-3 sm:py-4">
-          {site.hero.stats.map((s) => (
-            <div key={s.v} className="flex flex-col items-center">
-              <span
-                className="font-display text-xl sm:text-2xl md:text-3xl gradient-text"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                {s.k}
-              </span>
-              <span className="text-[0.55rem] sm:text-[0.65rem] font-mono uppercase tracking-widest text-[var(--color-ivory-mute)] mt-1">
-                {s.v}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <div className="relative max-w-5xl mx-auto text-center flex flex-col items-center gap-5 md:gap-7">
+        <Reveal y={16}>
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--color-sky-tint)] border border-[var(--color-sky-soft)] text-[var(--color-sky-deep)] text-xs font-bold uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-sky)] pulse-soft" />
+            {site.hero.eyebrow}
+          </span>
+        </Reveal>
 
-      {/* scroll cue */}
-      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
-        <span className="text-[0.6rem] font-mono uppercase tracking-[0.3em] text-[var(--color-ivory-dim)]">
-          Scroll
-        </span>
-        <span className="w-px h-8 md:h-10 bg-gradient-to-b from-[var(--color-ivory-dim)] to-transparent" />
+        <Reveal y={24}>
+          <h1 className="display-tight text-[clamp(2.5rem,9vw,6.5rem)] leading-[0.95]">
+            <span className="block text-[var(--color-ink)]">{site.hero.headline[0]}</span>
+            <span className="block gradient-text-happy">{site.hero.headline[1]}</span>
+          </h1>
+        </Reveal>
+
+        <Reveal y={20}>
+          <p className="max-w-xl text-base md:text-lg text-[var(--color-ink-soft)] leading-relaxed px-2">
+            {site.hero.sub}
+          </p>
+        </Reveal>
+
+        <Reveal y={20}>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mt-2 w-full sm:w-auto">
+            <MagicButton href={site.hero.primaryCta.href} variant="primary" size="lg" icon={<span aria-hidden>→</span>}>
+              {site.hero.primaryCta.label}
+            </MagicButton>
+            <MagicButton href={site.hero.secondaryCta.href} variant="ghost" size="lg">
+              {site.hero.secondaryCta.label}
+            </MagicButton>
+          </div>
+        </Reveal>
+
+        <Reveal y={16}>
+          <div className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-[var(--color-ink-soft)]">
+            <Trait icon="✨" text="Productos oficiales" />
+            <Trait icon="📍" text="Shopping Devoto" />
+            <Trait icon="💬" text="Atención por WhatsApp" />
+          </div>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-function ProductOrb({ color, emoji, size }: { color: string; emoji: string; size: number }) {
+function Trait({ icon, text }: { icon: string; text: string }) {
   return (
-    <div
-      className="rounded-full grid place-items-center"
-      style={{
-        width: size,
-        height: size,
-        background: `radial-gradient(circle at 30% 30%, ${color}, ${color}66)`,
-        boxShadow: `0 30px 80px -10px ${color}aa, inset 0 -20px 40px rgba(0,0,0,0.35)`,
-      }}
-    >
-      <span className="text-5xl" style={{ filter: `drop-shadow(0 4px 8px ${color})` }}>
-        {emoji}
-      </span>
-    </div>
+    <span className="inline-flex items-center gap-1.5">
+      <span aria-hidden>{icon}</span>
+      <span className="font-medium">{text}</span>
+    </span>
   );
 }

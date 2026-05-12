@@ -1,10 +1,11 @@
+import { Suspense } from "react";
 import { Nav } from "@/components/sections/Nav";
 import { Footer } from "@/components/sections/Footer";
 import { CatalogView } from "@/components/sections/CatalogView";
 
 export const metadata = {
   title: "Catálogo — Magic",
-  description: "Explora todos nuestros productos: juguetes, Marvel, Disney, gaming y más.",
+  description: "Productos oficiales Disney y Marvel: ropa, juguetes y accesorios.",
 };
 
 export default function CatalogPage() {
@@ -12,7 +13,9 @@ export default function CatalogPage() {
     <>
       <Nav />
       <main className="pt-32">
-        <CatalogView />
+        <Suspense fallback={<div className="px-6 py-20 text-center text-[var(--color-ink-mute)]">Cargando catálogo...</div>}>
+          <CatalogView />
+        </Suspense>
       </main>
       <Footer />
     </>

@@ -1,49 +1,42 @@
 import type { Metadata } from "next";
-import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Fredoka, Nunito } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "@/lib/store/StoreProvider";
 import { CartDrawer } from "@/components/overlays/CartDrawer";
 import { SearchModal } from "@/components/overlays/SearchModal";
 import { LoginModal } from "@/components/overlays/LoginModal";
+import { FloatingWhatsapp } from "@/components/sections/FloatingWhatsapp";
+import { site } from "@/content/site";
 
-const outfit = Outfit({
+const fredoka = Fredoka({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  variable: "--font-outfit",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-fredoka",
   display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const nunito = Nunito({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-jakarta",
-  display: "swap",
-});
-
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  variable: "--font-jetbrains",
+  weight: ["400", "600", "700", "800"],
+  variable: "--font-nunito",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Magic — Juguetería mágica",
-  description: "Juguetes, Marvel, Disney, coleccionables, ropa y más. Una experiencia mágica.",
+  title: `${site.brand} — ${site.tagline}`,
+  description: site.tagline,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="es"
-      className={`${outfit.variable} ${jakarta.variable} ${jetbrains.variable}`}
-    >
-      <body className="noise antialiased" suppressHydrationWarning>
+    <html lang="es" className={`${fredoka.variable} ${nunito.variable}`}>
+      <body className="antialiased" suppressHydrationWarning>
         <StoreProvider>
           {children}
           <CartDrawer />
           <SearchModal />
           <LoginModal />
+          <FloatingWhatsapp />
         </StoreProvider>
       </body>
     </html>

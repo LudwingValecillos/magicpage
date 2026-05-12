@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * LoginModal — admin login form.
- * Demo credentials: admin / admin (see useAuth).
- * On success → redirects to /admin and closes.
+ * LoginModal — admin login form light.
+ * POST /api/admin/login con ADMIN_USER / ADMIN_PASS desde env.
+ * On success → /admin.
  */
 
 import { useEffect, useState } from "react";
@@ -53,32 +53,28 @@ export function LoginModal() {
       onClick={close}
       className="fixed inset-0 z-[100] flex items-center justify-center px-4"
     >
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+      <div className="absolute inset-0 bg-[var(--color-ink)]/40 backdrop-blur-sm" />
 
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={submit}
-        className="relative w-full max-w-md glass-strong rounded-[var(--radius-lg)] overflow-hidden border border-white/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]"
+        className="relative w-full max-w-md bg-white rounded-[var(--radius-lg)] overflow-hidden border border-[var(--color-rule)] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.25)]"
       >
-        {/* glow header */}
-        <div className="relative px-7 py-8 border-b border-white/10">
-          <div
-            className="absolute -top-20 -right-20 w-60 h-60 rounded-full opacity-50 blur-3xl"
-            style={{ background: "var(--color-blue)" }}
-          />
-          <div className="relative">
-            <span className="eyebrow">Acceso restringido</span>
-            <h2 className="display text-3xl mt-2">Panel de admin</h2>
-            <p className="mt-2 text-sm text-[var(--color-ivory-dim)]">
-              Iniciá sesión para gestionar el catálogo.
-            </p>
-          </div>
+        <div
+          className="relative px-7 py-7 border-b border-[var(--color-rule)] overflow-hidden"
+          style={{ background: "linear-gradient(135deg, var(--color-sky-tint), var(--color-pink-tint))" }}
+        >
+          <div className="pointer-events-none absolute -top-12 -right-12 w-40 h-40 rounded-full bg-[var(--color-sky)]/20 blur-2xl" />
+          <span className="eyebrow">Acceso restringido</span>
+          <h2 className="display text-2xl mt-2 text-[var(--color-ink)]">Panel de admin</h2>
+          <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
+            Iniciá sesión para gestionar el catálogo.
+          </p>
         </div>
 
-        {/* fields */}
         <div className="px-7 py-6 flex flex-col gap-4">
-          <label className="flex flex-col gap-2">
-            <span className="text-[0.65rem] font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[0.65rem] uppercase tracking-widest text-[var(--color-ink-mute)] font-semibold">
               Usuario
             </span>
             <input
@@ -87,12 +83,12 @@ export function LoginModal() {
               value={user}
               onChange={(e) => setUser(e.target.value)}
               autoComplete="username"
-              className="glass rounded-full px-5 py-3 text-sm text-[var(--color-ivory)] placeholder:text-[var(--color-ivory-mute)] outline-none focus:bg-white/10 focus:border-[var(--color-blue)] border border-white/10 transition-colors"
+              className="px-4 py-2.5 rounded-full bg-white border border-[var(--color-rule)] text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-mute)] outline-none focus:border-[var(--color-sky)] transition-colors"
               placeholder="admin"
             />
           </label>
-          <label className="flex flex-col gap-2">
-            <span className="text-[0.65rem] font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[0.65rem] uppercase tracking-widest text-[var(--color-ink-mute)] font-semibold">
               Contraseña
             </span>
             <input
@@ -100,35 +96,30 @@ export function LoginModal() {
               value={pass}
               onChange={(e) => setPass(e.target.value)}
               autoComplete="current-password"
-              className="glass rounded-full px-5 py-3 text-sm text-[var(--color-ivory)] placeholder:text-[var(--color-ivory-mute)] outline-none focus:bg-white/10 focus:border-[var(--color-blue)] border border-white/10 transition-colors"
+              className="px-4 py-2.5 rounded-full bg-white border border-[var(--color-rule)] text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-mute)] outline-none focus:border-[var(--color-sky)] transition-colors"
               placeholder="••••••"
             />
           </label>
 
           {error && (
-            <div className="text-xs text-[var(--color-pink)] bg-[var(--color-pink)]/10 border border-[var(--color-pink)]/30 rounded-2xl px-4 py-2">
+            <div className="text-xs text-[var(--color-pink-deep)] bg-[var(--color-pink-tint)] border border-[var(--color-pink-soft)] rounded-2xl px-4 py-2">
               {error}
             </div>
           )}
-
-          <div className="text-[0.65rem] font-mono uppercase tracking-widest text-[var(--color-ivory-mute)] text-center mt-2">
-            Demo: <span className="text-[var(--color-blue)]">admin</span> / <span className="text-[var(--color-blue)]">admin</span>
-          </div>
         </div>
 
-        {/* actions */}
-        <div className="px-7 pb-7 flex flex-col gap-3">
+        <div className="px-7 pb-7 flex flex-col gap-2">
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-6 py-3 rounded-full font-semibold text-white bg-gradient-to-r from-[var(--color-blue-deep)] via-[var(--color-blue)] to-[var(--color-violet)] shadow-[0_8px_24px_-8px_rgba(77,168,255,0.7)] hover:shadow-[0_12px_36px_-8px_rgba(96,165,250,0.85)] transition-all disabled:opacity-60"
+            className="w-full px-6 py-3 rounded-full font-semibold text-white bg-[var(--color-sky)] shadow-[var(--shadow-sky)] hover:bg-[var(--color-sky-deep)] transition-colors disabled:opacity-60"
           >
             {loading ? "Entrando..." : "Entrar →"}
           </button>
           <button
             type="button"
             onClick={close}
-            className="w-full px-6 py-3 rounded-full text-sm text-[var(--color-ivory-dim)] hover:text-[var(--color-ivory)] hover:bg-white/5 transition-colors"
+            className="w-full px-6 py-2.5 rounded-full text-sm text-[var(--color-ink-soft)] hover:bg-[var(--color-bg-tint)] transition-colors"
           >
             Cancelar
           </button>
