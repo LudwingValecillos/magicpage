@@ -1,38 +1,53 @@
 "use client";
 
 /**
- * useProducts — read + mutate the product catalog.
- *
- * Auto-respects the `active` flag in public lists (use listAll() to bypass).
+ * useProducts — leer + mutar catálogo.
+ * Las categorías son fijas (3) y vienen de site.ts, no del adapter.
  */
 
 import { useCallback, useMemo } from "react";
 import { useStore } from "./StoreProvider";
-import type { Product } from "./types";
+import { site } from "@/content/site";
+import type { Product, CategoriaSlug, MarcaSlug } from "./types";
 
 export function useProducts() {
-  const { products, setProducts, categories } = useStore();
+  const { products, setProducts } = useStore();
 
-  const visible = useMemo(() => products.filter((p) => p.active), [products]);
+  const visibles = useMemo(() => products.filter((p) => p.activo), [products]);
 
   const findBySlug = useCallback(
     (slug: string) => products.find((p) => p.slug === slug),
     [products],
   );
 
+  const byCategoria = useCallback(
+    (c: CategoriaSlug) => visibles.filter((p) => p.categoria === c),
+    [visibles],
+  );
+
+  const byMarca = useCallback(
+    (m: MarcaSlug) => visibles.filter((p) => p.marca === m),
+    [visibles],
+  );
+
+  const ofertas = useMemo(() => visibles.filter((p) => p.oferta), [visibles]);
+
   const create = useCallback(
     async (p: Product) => {
       if (products.some((x) => x.slug === p.slug)) {
-        throw new Error(`Producto con slug "${p.slug}" ya existe`);
+        throw new Error(`Ya existe un producto con slug "${p.slug}"`);
       }
-      await setProducts([p, ...products]);
+      const now = Date.now();
+      await setProducts([{ ...p, createdAt: now, updatedAt: now }, ...products]);
     },
     [products, setProducts],
   );
 
   const update = useCallback(
     async (slug: string, patch: Partial<Product>) => {
-      const next = products.map((p) => (p.slug === slug ? { ...p, ...patch } : p));
+      const next = products.map((p) =>
+        p.slug === slug ? { ...p, ...patch, updatedAt: Date.now() } : p,
+      );
       await setProducts(next);
     },
     [products, setProducts],
@@ -45,33 +60,37 @@ export function useProducts() {
     [products, setProducts],
   );
 
-  const toggleActive = useCallback(
+  const toggleActivo = useCallback(
     async (slug: string) => {
       const p = products.find((x) => x.slug === slug);
       if (!p) return;
-      await update(slug, { active: !p.active });
+      await update(slug, { activo: !p.activo });
     },
     [products, update],
   );
 
-  const toggleSale = useCallback(
+  const toggleOferta = useCallback(
     async (slug: string) => {
       const p = products.find((x) => x.slug === slug);
       if (!p) return;
-      await update(slug, { onSale: !p.onSale });
+      await update(slug, { oferta: !p.oferta });
     },
     [products, update],
   );
 
   return {
     all: products,
-    visible,
-    categories,
+    visibles,
+    categorias: site.categorias,
+    marcas: site.marcas,
     findBySlug,
+    byCategoria,
+    byMarca,
+    ofertas,
     create,
     update,
     remove,
-    toggleActive,
-    toggleSale,
+    toggleActivo,
+    toggleOferta,
   };
 }

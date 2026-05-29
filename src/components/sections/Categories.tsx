@@ -1,16 +1,16 @@
 "use client";
 
 /**
- * Categories — large editorial tiles. First two are XL, rest LG.
- * Stagger-revealed on scroll.
+ * Categories — 3 tiles grandes (ropa, juguetes, accesorios). Cuenta productos por categoría desde el store.
  */
 
 import { Reveal } from "@/components/Reveal";
 import { CategoryCard } from "@/components/ui/CategoryCard";
+import { useProducts } from "@/lib/store/useProducts";
 import { site } from "@/content/site";
 
 export function Categories() {
-  const [a, b, ...rest] = site.categories;
+  const { visibles, categorias } = useProducts();
 
   return (
     <section
@@ -18,28 +18,24 @@ export function Categories() {
       className="relative px-[var(--gutter)] py-[var(--section)]"
       style={{
         ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)",
-        ["--section" as string]: "clamp(3.5rem, 10vh, 9rem)",
+        ["--section" as string]: "clamp(3rem, 8vh, 6rem)",
       } as React.CSSProperties}
     >
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <Reveal y={32} className="max-w-2xl">
-          <span className="eyebrow">Explorá universos</span>
-          <h2 className="display text-[clamp(2.25rem,6vw,5rem)] mt-3">
-            Encuentra tu <span className="gradient-text">categoría</span> mágica.
+      <div className="max-w-6xl mx-auto">
+        <Reveal y={24} className="text-center mb-10">
+          <span className="eyebrow">Categorías</span>
+          <h2 className="display text-[clamp(2rem,5vw,3.5rem)] mt-3">
+            Buscá por <span className="gradient-text-sky">tipo de producto</span>.
           </h2>
         </Reveal>
-        <Reveal y={20} className="text-[var(--color-ivory-dim)] text-sm font-mono uppercase tracking-widest">
-          08 universos · {site.categories.reduce((a, c) => a + c.count, 0).toLocaleString()} productos
+
+        <Reveal stagger={100} y={32} className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+          {(categorias ?? site.categorias).map((c) => {
+            const count = visibles.filter((p) => p.categoria === c.slug).length;
+            return <CategoryCard key={c.slug} categoria={c} count={count} />;
+          })}
         </Reveal>
       </div>
-
-      <Reveal stagger={120} y={48} className="grid grid-cols-2 md:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
-        <CategoryCard category={a} size="xl" className="col-span-2 md:col-span-3" />
-        <CategoryCard category={b} size="xl" className="col-span-2 md:col-span-3" />
-        {rest.map((c) => (
-          <CategoryCard key={c.slug} category={c} size="lg" className="md:col-span-2" />
-        ))}
-      </Reveal>
     </section>
   );
 }

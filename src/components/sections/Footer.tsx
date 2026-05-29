@@ -1,77 +1,115 @@
 "use client";
 
 /**
- * Footer — premium colophon. Brand block + 4 link columns + socials + legal.
+ * Footer — datos de contacto, redes, Google Maps embebido, legal.
  */
 
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
+import { MapEmbed } from "./MapEmbed";
 import { site } from "@/content/site";
+import { genericInquiry, whatsappLink, WHATSAPP_NUMBER } from "@/lib/whatsapp";
 
 export function Footer() {
+  const socials = [
+    site.local.instagram && { label: "Instagram", href: site.local.instagram, icon: "ig" },
+    site.local.facebook && { label: "Facebook", href: site.local.facebook, icon: "fb" },
+    site.local.tiktok && { label: "TikTok", href: site.local.tiktok, icon: "tt" },
+  ].filter(Boolean) as Array<{ label: string; href: string; icon: string }>;
+
   return (
     <footer
-      className="relative px-[var(--gutter)] pt-24 pb-10 mt-12 border-t border-[var(--color-rule)]"
+      id="local"
+      className="relative mt-12 pt-16 pb-10 px-[var(--gutter)] border-t border-[var(--color-rule)] bg-[var(--color-bg-soft)]"
       style={{ ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)" } as React.CSSProperties}
     >
-      <Reveal y={32} className="grid grid-cols-2 md:grid-cols-6 gap-10">
-        {/* brand */}
-        <div className="col-span-2">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+        <Reveal y={24}>
           <Link href="/" className="inline-flex items-center gap-2 group">
-            <span className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-blue)] via-[var(--color-violet)] to-[var(--color-pink)] grid place-items-center text-lg shadow-[0_0_24px_rgba(77,168,255,0.7)] group-hover:rotate-12 transition-transform">
+            <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[var(--color-sky)] to-[var(--color-pink)] grid place-items-center text-base text-white shadow-[var(--shadow-soft)] group-hover:rotate-6 transition-transform">
               ✦
             </span>
-            <span className="font-display text-2xl tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-              {site.brand}
-            </span>
+            <span className="font-display text-2xl text-[var(--color-ink)]">{site.brand}</span>
           </Link>
-          <p className="mt-4 text-sm text-[var(--color-ivory-dim)] max-w-xs leading-relaxed">
-            Una experiencia mágica para niños y padres. Curado con cariño desde 2026.
+          <p className="mt-4 text-[var(--color-ink-soft)] max-w-md leading-relaxed">
+            {site.tagline}
           </p>
-          <div className="mt-6 flex items-center gap-2">
-            {site.footer.socials.map((s) => (
+
+          <div className="mt-6 flex flex-col gap-2 text-sm text-[var(--color-ink-soft)]">
+            <div className="flex items-start gap-2">
+              <span aria-hidden>📍</span>
+              <span>{site.local.direccion}</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span aria-hidden>🕒</span>
+              <span>{site.local.horarios}</span>
+            </div>
+            {WHATSAPP_NUMBER && (
               <a
-                key={s.label}
-                href={s.href}
-                aria-label={s.label}
-                className="w-9 h-9 rounded-full glass grid place-items-center text-xs font-mono hover:bg-white/10 transition-colors"
+                href={whatsappLink(genericInquiry())}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[var(--color-sky-deep)] font-semibold hover:underline"
               >
-                {s.label}
+                <span aria-hidden>💬</span> WhatsApp
               </a>
-            ))}
+            )}
           </div>
-        </div>
 
-        {/* columns */}
-        {site.footer.cols.map((col) => (
-          <div key={col.title}>
-            <h4 className="text-[0.7rem] font-mono uppercase tracking-widest text-[var(--color-ivory-mute)] mb-4">
-              {col.title}
-            </h4>
-            <ul className="flex flex-col gap-2">
-              {col.links.map((l) => (
-                <li key={l.label}>
-                  <Link
-                    href={l.href}
-                    className="text-sm text-[var(--color-ivory-dim)] hover:text-[var(--color-blue)] transition-colors"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
+          {socials.length > 0 && (
+            <div className="mt-6 flex items-center gap-2">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="w-10 h-10 rounded-full border border-[var(--color-rule-strong)] grid place-items-center text-[var(--color-ink-soft)] hover:bg-[var(--color-sky)] hover:text-white hover:border-[var(--color-sky)] transition-colors"
+                >
+                  <SocialIcon name={s.icon} />
+                </a>
               ))}
-            </ul>
-          </div>
-        ))}
-      </Reveal>
+            </div>
+          )}
+        </Reveal>
 
-      <Reveal y={16} delay={200} className="mt-16 pt-6 border-t border-[var(--color-rule)] flex flex-col md:flex-row items-center justify-between gap-4">
-        <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
-          {site.footer.legal}
-        </span>
-        <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
-          Hecho con <span className="text-[var(--color-blue)]">♥</span> en 2026
-        </span>
-      </Reveal>
+        <Reveal y={24} delay={120}>
+          <MapEmbed />
+        </Reveal>
+      </div>
+
+      <div className="max-w-6xl mx-auto mt-12 pt-6 border-t border-[var(--color-rule)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--color-ink-mute)]">
+        <span>{site.footer.legal}</span>
+        <span>Hecho con ♥</span>
+      </div>
     </footer>
   );
+}
+
+function SocialIcon({ name }: { name: string }) {
+  if (name === "ig") {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (name === "fb") {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z" />
+      </svg>
+    );
+  }
+  if (name === "tt") {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.6 7.4a6.7 6.7 0 0 1-3.9-1.3v9.4a5.7 5.7 0 1 1-5.7-5.7c.3 0 .7 0 1 .1v3a2.7 2.7 0 1 0 1.9 2.6V2h2.9a4.8 4.8 0 0 0 4.8 4.8v0.6h-0.9z" />
+      </svg>
+    );
+  }
+  return null;
 }

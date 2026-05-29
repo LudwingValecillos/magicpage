@@ -1,38 +1,28 @@
 "use client";
 
 /**
- * StoreProvider — single React context that exposes the entire client store.
- *
- * Wraps the app at <html><body><StoreProvider>...</StoreProvider></body></html>
- * (mounted in src/app/layout.tsx).
- *
- * Hydration: on mount, loads from the adapter (localStorage). All children
- * read via the useStore() hook below or the convenience hooks in this folder.
+ * StoreProvider — contexto único con productos + carrito + sesión admin.
+ * Hidrata desde el adapter al montar.
  */
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { adapter } from "./adapter";
-import type { AdminSession, CartItem, Category, Product } from "./types";
+import type { AdminSession, CartItem, Product } from "./types";
 
 interface StoreState {
   ready: boolean;
   products: Product[];
-  categories: Category[];
   cart: CartItem[];
   session: AdminSession | null;
 
-  // overlay UI state
   cartOpen: boolean;
   searchOpen: boolean;
   loginOpen: boolean;
 
-  // mutators
   setProducts: (next: Product[]) => Promise<void>;
-  setCategories: (next: Category[]) => Promise<void>;
   setCart: (next: CartItem[]) => Promise<void>;
   setSession: (s: AdminSession | null) => Promise<void>;
 
-  // overlay toggles
   openCart: () => void;
   closeCart: () => void;
   openSearch: () => void;
@@ -46,7 +36,6 @@ const Ctx = createContext<StoreState | null>(null);
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [products, setProductsState] = useState<Product[]>([]);
-  const [categories, setCategoriesState] = useState<Category[]>([]);
   const [cart, setCartState] = useState<CartItem[]>([]);
   const [session, setSessionState] = useState<AdminSession | null>(null);
 
@@ -54,19 +43,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
 
-  // initial hydration
   useEffect(() => {
     let alive = true;
     (async () => {
-      const [p, c, ct, s] = await Promise.all([
+      const [p, ct, s] = await Promise.all([
         adapter.listProducts(),
-        adapter.listCategories(),
         adapter.loadCart(),
         adapter.loadSession(),
       ]);
       if (!alive) return;
       setProductsState(p);
-      setCategoriesState(c);
       setCartState(ct);
       setSessionState(s);
       setReady(true);
@@ -79,10 +65,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const setProducts = useCallback(async (next: Product[]) => {
     setProductsState(next);
     await adapter.saveProducts(next);
-  }, []);
-  const setCategories = useCallback(async (next: Category[]) => {
-    setCategoriesState(next);
-    await adapter.saveCategories(next);
   }, []);
   const setCart = useCallback(async (next: CartItem[]) => {
     setCartState(next);
@@ -97,14 +79,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     () => ({
       ready,
       products,
-      categories,
       cart,
       session,
       cartOpen,
       searchOpen,
       loginOpen,
       setProducts,
-      setCategories,
       setCart,
       setSession,
       openCart: () => setCartOpen(true),
@@ -114,7 +94,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       openLogin: () => setLoginOpen(true),
       closeLogin: () => setLoginOpen(false),
     }),
-    [ready, products, categories, cart, session, cartOpen, searchOpen, loginOpen, setProducts, setCategories, setCart, setSession],
+    [ready, products, cart, session, cartOpen, searchOpen, loginOpen, setProducts, setCart, setSession],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

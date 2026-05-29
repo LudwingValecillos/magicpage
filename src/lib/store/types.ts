@@ -1,38 +1,48 @@
 /**
  * Shared types for the client-side store layer.
- * Mirrors the seed types in src/content/site.ts but adds fields that
- * become writable through the admin panel.
+ * Schema simplificado al acuerdo con el cliente.
  */
 
-import type { BadgeKind } from "@/content/site";
+export type CategoriaSlug = "ropa" | "juguetes" | "accesorios";
+export type MarcaSlug = "disney" | "marvel" | "otra";
 
-export interface Product {
-  slug: string;
-  name: string;
-  category: string;
-  categorySlug: string;
-  price: number;
-  oldPrice?: number;
-  rating: number;
-  badges?: BadgeKind[];
-  icon: string;
-  accent: string;
-  description: string;
-  details: string[];
-  /** Image URLs. Empty array means use the emoji glyph fallback. */
-  images: string[];
-  /** False = product hidden from catalog/home. Default true. */
-  active: boolean;
-  /** True = show oldPrice & sale badge. Default false. */
-  onSale: boolean;
+export interface ProductImage {
+  url: string;
+  /** Path en Firebase Storage (productos/{id}/{nombre}). Vacío si la imagen no fue subida por nosotros. */
+  storagePath: string;
 }
 
-export interface Category {
+export interface Product {
+  /** URL key (también es el doc id en Firestore). Generado del nombre. */
   slug: string;
-  name: string;
-  count: number;
-  icon: string;
+  nombre: string;
+  precio: number;
+  categoria: CategoriaSlug;
+  marca: MarcaSlug;
+  imagenes: ProductImage[];
+  /** Talles disponibles, ej. ["2","4","6","8"] o ["S","M","L"]. Vacío si no aplica. */
+  talles: string[];
+  descripcion?: string;
+  oferta: boolean;
+  /** Requerido si oferta=true; mostrado tachado. */
+  precioAnterior?: number;
+  /** False = oculto del catálogo público. Default true. */
+  activo: boolean;
+  /** Timestamp ms — para ordenar por más nuevos. */
+  createdAt?: number;
+  updatedAt?: number;
+}
+
+export interface CategoriaInfo {
+  slug: CategoriaSlug;
+  nombre: string;
+  emoji: string;
   color: string;
+}
+
+export interface MarcaInfo {
+  slug: MarcaSlug;
+  nombre: string;
 }
 
 export interface CartItem {
@@ -45,4 +55,14 @@ export interface AdminSession {
   loggedAt: number;
 }
 
-export type { BadgeKind };
+/** Datos del checkout que generan el mensaje de WhatsApp. */
+export interface CheckoutData {
+  nombre: string;
+  telefono: string;
+  entrega: "retiro" | "envio";
+  direccion?: string;
+  ciudad?: string;
+  provincia?: string;
+  pago: "efectivo" | "transferencia" | "otra";
+  comentarios?: string;
+}

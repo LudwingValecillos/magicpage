@@ -1,10 +1,11 @@
 "use client";
 
 /**
- * <MagicButton> — premium CTA. Three variants:
- *   - primary  → pink-to-violet gradient with glow
- *   - ghost    → glass with gradient border
- *   - link     → underline animation
+ * <MagicButton> — CTA principal. Variantes:
+ *   primary  → azul cielo sólido con sombra suave
+ *   accent   → rosa
+ *   ghost    → borde + fondo blanco
+ *   link     → texto con underline animado
  */
 
 import Link from "next/link";
@@ -13,10 +14,12 @@ interface MagicButtonProps {
   children: React.ReactNode;
   href?: string;
   onClick?: () => void;
-  variant?: "primary" | "ghost" | "link";
-  size?: "md" | "lg";
+  variant?: "primary" | "accent" | "ghost" | "link";
+  size?: "sm" | "md" | "lg";
   className?: string;
   icon?: React.ReactNode;
+  type?: "button" | "submit";
+  disabled?: boolean;
 }
 
 export function MagicButton({
@@ -27,43 +30,42 @@ export function MagicButton({
   size = "md",
   className = "",
   icon,
+  type = "button",
+  disabled = false,
 }: MagicButtonProps) {
   const sizes = {
-    md: "px-6 py-3 text-sm",
-    lg: "px-8 py-4 text-base",
+    sm: "px-4 py-2 text-sm",
+    md: "px-6 py-3 text-base",
+    lg: "px-7 py-4 text-base",
   };
 
   const styles = {
-    primary: `relative overflow-hidden rounded-full font-semibold text-white
-              bg-gradient-to-r from-[var(--color-blue-deep)] via-[var(--color-blue)] to-[var(--color-violet)]
-              bg-[length:200%_100%] hover:bg-[position:100%_0%]
-              shadow-[0_8px_32px_-8px_rgba(77,168,255,0.7)]
-              hover:shadow-[0_16px_48px_-8px_rgba(96,165,250,0.85)]
-              transition-all duration-500`,
-    ghost: `relative rounded-full font-medium glass text-[var(--color-ivory)]
-            hover:bg-white/10 hover:border-[var(--color-blue)]/30 transition-all duration-300`,
-    link: `relative inline-flex items-center gap-2 font-medium text-[var(--color-ivory)]
-           after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full
-           after:bg-gradient-to-r after:from-[var(--color-blue)] after:to-[var(--color-pink)]
-           after:scale-x-0 after:origin-left hover:after:scale-x-100
-           after:transition-transform after:duration-500`,
+    primary:
+      "bg-[var(--color-sky)] text-white shadow-[var(--shadow-sky)] hover:bg-[var(--color-sky-deep)] hover:-translate-y-0.5",
+    accent:
+      "bg-[var(--color-pink)] text-white shadow-[var(--shadow-pink)] hover:bg-[var(--color-pink-deep)] hover:-translate-y-0.5",
+    ghost:
+      "bg-white text-[var(--color-ink)] border border-[var(--color-rule-strong)] hover:border-[var(--color-sky)] hover:text-[var(--color-sky-deep)]",
+    link:
+      "text-[var(--color-sky-deep)] underline-offset-4 hover:underline px-0 py-0",
   };
+
+  const cls = `group inline-flex items-center justify-center gap-2 rounded-full font-semibold [transition:background-color_.2s_var(--ease-out-quart),color_.2s_var(--ease-out-quart),border-color_.2s_var(--ease-out-quart),box-shadow_.2s_var(--ease-out-quart),transform_.2s_var(--ease-out-quart)] ${
+    variant === "link" ? "" : sizes[size]
+  } ${styles[variant]} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`;
 
   const inner = (
     <>
-      <span className="relative z-10 inline-flex items-center gap-2">
-        {children}
-        {icon}
-      </span>
-      {variant === "primary" && (
-        <span className="absolute inset-0 bg-white/20 opacity-0 hover:opacity-100 transition-opacity duration-500" />
+      {children}
+      {icon && (
+        <span className="inline-flex transition-transform duration-200 ease-[var(--ease-out-quart)] group-hover:translate-x-0.5">
+          {icon}
+        </span>
       )}
     </>
   );
 
-  const cls = `inline-flex items-center justify-center ${sizes[size]} ${styles[variant]} ${className}`;
-
-  if (href) {
+  if (href && !disabled) {
     return (
       <Link href={href} className={cls}>
         {inner}
@@ -71,7 +73,7 @@ export function MagicButton({
     );
   }
   return (
-    <button onClick={onClick} className={cls}>
+    <button type={type} onClick={onClick} disabled={disabled} className={cls}>
       {inner}
     </button>
   );

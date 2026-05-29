@@ -1,35 +1,51 @@
 "use client";
 
 /**
- * ProductDetail — premium product page.
- * Now driven by the store: looks up product by slug from useProducts().
- * Gallery cycles through product.images[] (or falls back to emoji).
+ * ProductDetail — light. Gallery + info + WhatsApp inquiry + relacionados.
+ * Lee del store por slug. Si todavía hidrata, muestra skeleton.
  */
 
 import { useState } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
-import { GradientMesh } from "@/components/visual/GradientMesh";
-import { ParticleField } from "@/components/visual/ParticleField";
-import { GlowOrb } from "@/components/visual/GlowOrb";
 import { Badge } from "@/components/ui/Badge";
 import { MagicButton } from "@/components/ui/MagicButton";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { useProducts } from "@/lib/store/useProducts";
 import { useCart } from "@/lib/store/useCart";
 import { useStore } from "@/lib/store/StoreProvider";
+import { productInquiry, whatsappLink } from "@/lib/whatsapp";
+import { site } from "@/content/site";
 
 export function ProductDetail({ slug }: { slug: string }) {
   const { ready } = useStore();
-  const { findBySlug, visible } = useProducts();
+  const { findBySlug, visibles } = useProducts();
   const { add, open: openCart } = useCart();
   const [qty, setQty] = useState(1);
   const [thumb, setThumb] = useState(0);
+  const [talle, setTalle] = useState<string | null>(null);
+  const [talleError, setTalleError] = useState(false);
 
   if (!ready) {
     return (
-      <div className="min-h-[60vh] grid place-items-center">
-        <span className="text-[var(--color-ivory-mute)] text-sm font-mono uppercase tracking-widest">Cargando...</span>
+      <div
+        className="px-[var(--gutter)] pb-[var(--section)]"
+        style={{
+          ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)",
+          ["--section" as string]: "clamp(3rem, 8vh, 6rem)",
+        } as React.CSSProperties}
+      >
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          <div className="lg:col-span-7 aspect-square rounded-[var(--radius-xl)] bg-[var(--color-bg-tint)] animate-pulse" />
+          <div className="lg:col-span-5 flex flex-col gap-4 pt-2">
+            <div className="h-3 w-24 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+            <div className="h-8 w-4/5 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+            <div className="h-10 w-1/3 rounded-full bg-[var(--color-bg-tint)] animate-pulse mt-2" />
+            <div className="h-4 w-full rounded-full bg-[var(--color-bg-tint)] animate-pulse mt-4" />
+            <div className="h-4 w-2/3 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+            <div className="h-14 w-full rounded-full bg-[var(--color-bg-tint)] animate-pulse mt-6" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -40,22 +56,41 @@ export function ProductDetail({ slug }: { slug: string }) {
     return (
       <div className="min-h-[60vh] grid place-items-center px-6 text-center">
         <div>
-          <span className="text-6xl">✦</span>
+          <span className="text-6xl">🔎</span>
           <h1 className="display text-4xl mt-4">Producto no encontrado</h1>
-          <p className="mt-3 text-[var(--color-ivory-dim)]">El producto &ldquo;{slug}&rdquo; no existe o fue desactivado.</p>
+          <p className="mt-3 text-[var(--color-ink-soft)]">
+            El producto &ldquo;{slug}&rdquo; no existe o fue desactivado.
+          </p>
           <div className="mt-8">
-            <MagicButton href="/catalogo" variant="primary">Ver catálogo</MagicButton>
+            <MagicButton href="/catalogo" variant="primary">
+              Ver catálogo
+            </MagicButton>
           </div>
         </div>
       </div>
     );
   }
 
-  const related = visible.filter((p) => p.categorySlug === product.categorySlug && p.slug !== product.slug).slice(0, 4);
-  const images = product.images.length ? product.images : [];
+  const categoriaInfo = site.categorias.find((c) => c.slug === product.categoria);
+  const related = visibles
+    .filter((p) => p.categoria === product.categoria && p.slug !== product.slug)
+    .slice(0, 4);
+  const images = product.imagenes ?? [];
   const hasImages = images.length > 0;
+  const discount =
+    product.oferta && product.precioAnterior && product.precioAnterior > product.precio
+      ? Math.round((1 - product.precio / product.precioAnterior) * 100)
+      : null;
+
+  const talles = product.talles ?? [];
+  const requiresTalle = talles.length > 0;
 
   const handleAdd = () => {
+    if (requiresTalle && !talle) {
+      setTalleError(true);
+      return;
+    }
+    setTalleError(false);
     add(product.slug, qty);
     openCart();
   };
@@ -65,196 +100,236 @@ export function ProductDetail({ slug }: { slug: string }) {
       className="relative px-[var(--gutter)] pb-[var(--section)]"
       style={{
         ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)",
-        ["--section" as string]: "clamp(3.5rem, 10vh, 9rem)",
+        ["--section" as string]: "clamp(3rem, 8vh, 6rem)",
       } as React.CSSProperties}
     >
-      <GradientMesh variant="soft" />
-
-      {/* breadcrumb */}
-      <Reveal y={16} className="relative mb-8 text-xs font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
-        <Link href="/" className="hover:text-[var(--color-ivory)] transition-colors">Inicio</Link>
-        <span className="mx-2">/</span>
-        <Link href={`/catalogo?cat=${product.categorySlug}`} className="hover:text-[var(--color-ivory)] transition-colors">
-          {product.category}
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-[var(--color-ivory)]">{product.name}</span>
-      </Reveal>
-
-      <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* gallery */}
-        <Reveal y={48} className="lg:col-span-7">
-          <div
-            className="relative aspect-square rounded-[var(--radius-xl)] overflow-hidden glass-strong"
-            style={{
-              background: `radial-gradient(ellipse at 50% 60%, ${product.accent}33, transparent 70%)`,
-            }}
+      <div className="max-w-6xl mx-auto">
+        {/* breadcrumb */}
+        <Reveal y={12} className="text-xs uppercase tracking-widest text-[var(--color-ink-mute)] mb-6">
+          <Link href="/" className="hover:text-[var(--color-sky-deep)] transition-colors">
+            Inicio
+          </Link>
+          <span className="mx-2">/</span>
+          <Link
+            href={`/catalogo?cat=${product.categoria}`}
+            className="hover:text-[var(--color-sky-deep)] transition-colors"
           >
-            <ParticleField density={40} hue="mixed" />
-            <GlowOrb className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" color="blue" size={460} blur={140} opacity={0.4} />
-
-            {hasImages ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={images[thumb]}
-                alt={product.name}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 grid place-items-center">
-                <div
-                  className="w-44 h-44 sm:w-56 sm:h-56 md:w-72 md:h-72 rounded-full grid place-items-center text-7xl sm:text-8xl md:text-9xl float-slow"
-                  style={{
-                    background: `radial-gradient(circle at 30% 30%, ${product.accent}, ${product.accent}66)`,
-                    boxShadow: `0 30px 100px -10px ${product.accent}aa, inset 0 -30px 60px rgba(0,0,0,0.35)`,
-                  }}
-                >
-                  <span style={{ filter: `drop-shadow(0 8px 20px ${product.accent})` }}>{product.icon}</span>
-                </div>
-              </div>
-            )}
-
-            {/* badges */}
-            <div className="absolute top-6 left-6 flex flex-col gap-2">
-              {product.onSale && product.oldPrice && <Badge variant="sale">Oferta</Badge>}
-              {product.badges?.map((b) => (
-                <Badge key={b} variant={b}>
-                  {b === "new" ? "Nuevo" : b === "hot" ? "Top" : b === "sale" ? "Oferta" : "Exclusivo"}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          {/* thumbnails (only when images exist) */}
-          {hasImages && images.length > 1 && (
-            <div className="mt-4 grid grid-cols-4 gap-3">
-              {images.slice(0, 4).map((src, i) => (
-                <button
-                  key={i}
-                  onClick={() => setThumb(i)}
-                  className={`aspect-square rounded-[var(--radius-md)] overflow-hidden glass transition-all ${
-                    thumb === i ? "ring-2 ring-[var(--color-blue)] glow-blue" : "hover:bg-white/10"
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
+            {categoriaInfo?.nombre ?? product.categoria}
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-[var(--color-ink)]">{product.nombre}</span>
         </Reveal>
 
-        {/* info */}
-        <div className="lg:col-span-5 lg:sticky lg:top-28">
-          <Reveal y={24}>
-            <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
-              {product.category}
-            </span>
-            <h1 className="display text-[clamp(2.25rem,5vw,4rem)] mt-2 leading-tight">
-              {product.name}
-            </h1>
-            <div className="flex items-center gap-3 mt-4">
-              <div className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} className={i < product.rating ? "text-[var(--color-gold)]" : "text-[var(--color-ivory-mute)]/30"}>
-                    ★
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* gallery */}
+          <Reveal y={32} className="lg:col-span-7">
+            <div className="group relative aspect-square rounded-[var(--radius-xl)] overflow-hidden card bg-[var(--color-bg-tint)]">
+              {hasImages ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  key={thumb}
+                  src={images[thumb].url}
+                  alt={product.nombre}
+                  className="absolute inset-0 w-full h-full object-cover [animation:fade-img_.4s_var(--ease-out-quart)] transition-transform duration-[600ms] ease-[var(--ease-out-quart)] group-hover:scale-105"
+                />
+              ) : (
+                <div className="absolute inset-0 grid place-items-center">
+                  <span
+                    className="text-[8rem] sm:text-[10rem] float-soft"
+                    style={{ filter: "drop-shadow(0 12px 32px rgba(28,36,52,0.15))" }}
+                  >
+                    {categoriaInfo?.emoji ?? "✦"}
                   </span>
-                ))}
-              </div>
-              <span className="text-xs font-mono text-[var(--color-ivory-mute)]">128 reseñas</span>
-            </div>
-
-            <div className="mt-8 flex items-baseline gap-3 flex-wrap">
-              <span className="font-display text-5xl gradient-text" style={{ fontFamily: "var(--font-display)" }}>
-                ${product.price.toLocaleString()}
-              </span>
-              {product.onSale && product.oldPrice && (
-                <span className="text-lg text-[var(--color-ivory-mute)] line-through">
-                  ${product.oldPrice.toLocaleString()}
-                </span>
+                </div>
               )}
-            </div>
 
-            <p className="mt-6 text-base text-[var(--color-ivory-dim)] leading-relaxed">
-              {product.description}
-            </p>
-
-            {/* qty + cta */}
-            <div className="mt-8 md:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <div className="flex items-center justify-center glass rounded-full self-start sm:self-auto">
-                <button
-                  onClick={() => setQty(Math.max(1, qty - 1))}
-                  className="w-11 h-11 grid place-items-center text-[var(--color-ivory)] hover:bg-white/5 rounded-l-full transition-colors"
-                >
-                  −
-                </button>
-                <span className="w-10 text-center font-mono text-sm">{qty}</span>
-                <button
-                  onClick={() => setQty(qty + 1)}
-                  className="w-11 h-11 grid place-items-center text-[var(--color-ivory)] hover:bg-white/5 rounded-r-full transition-colors"
-                >
-                  +
-                </button>
+              <div className="absolute top-5 left-5 flex flex-col gap-1.5">
+                {discount !== null && <Badge variant="oferta">-{discount}%</Badge>}
+                {product.oferta && discount === null && <Badge variant="oferta">Oferta</Badge>}
+                {product.marca === "disney" && <Badge variant="disney">Disney</Badge>}
+                {product.marca === "marvel" && <Badge variant="marvel">Marvel</Badge>}
               </div>
-              <MagicButton variant="primary" size="lg" className="flex-1" onClick={handleAdd} icon={<span>🛍</span>}>
-                Agregar al carrito
-              </MagicButton>
             </div>
 
-            <button className="mt-3 w-full glass rounded-full py-3 text-sm font-medium hover:bg-white/10 transition-colors">
-              ♥ Guardar en favoritos
-            </button>
-
-            {/* details list */}
-            <div className="mt-10 pt-8 border-t border-[var(--color-rule)]">
-              <h3 className="text-[0.7rem] font-mono uppercase tracking-widest text-[var(--color-ivory-mute)] mb-4">
-                Detalles
-              </h3>
-              <ul className="flex flex-col gap-2">
-                {product.details.map((d) => (
-                  <li key={d} className="flex items-center gap-3 text-sm text-[var(--color-ivory-dim)]">
-                    <span className="text-[var(--color-blue)]">✦</span> {d}
-                  </li>
+            {hasImages && images.length > 1 && (
+              <div className="mt-4 grid grid-cols-4 gap-3">
+                {images.slice(0, 4).map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setThumb(i)}
+                    aria-label={`Ver imagen ${i + 1}`}
+                    className={`aspect-square rounded-[var(--radius-md)] overflow-hidden border-2 [transition:border-color_.2s_var(--ease-out-quart),transform_.2s_var(--ease-out-quart)] ${
+                      thumb === i
+                        ? "border-[var(--color-sky)] scale-[0.96]"
+                        : "border-[var(--color-rule)] hover:border-[var(--color-sky-soft)]"
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                  </button>
                 ))}
-              </ul>
-            </div>
-
-            <div className="mt-8 grid grid-cols-3 gap-2">
-              <Chip icon="🚚" label="Envío" value="24-48hs" />
-              <Chip icon="↺" label="Cambio" value="30 días" />
-              <Chip icon="🔒" label="Pago" value="Seguro" />
-            </div>
+              </div>
+            )}
           </Reveal>
+
+          {/* info */}
+          <div className="lg:col-span-5 lg:sticky lg:top-28">
+            <Reveal y={24}>
+              <span className="text-xs uppercase tracking-widest font-semibold text-[var(--color-ink-mute)]">
+                {categoriaInfo?.nombre ?? product.categoria}
+              </span>
+              <h1 className="display text-[clamp(1.75rem,4vw,3rem)] mt-2 leading-tight text-[var(--color-ink)]">
+                {product.nombre}
+              </h1>
+
+              <div className="mt-6 flex items-baseline gap-3 flex-wrap">
+                <span className="font-display text-4xl md:text-5xl text-[var(--color-ink)] tracking-tight">
+                  ${product.precio.toLocaleString("es-AR")}
+                </span>
+                {product.oferta && product.precioAnterior && (
+                  <span className="text-lg text-[var(--color-ink-mute)] line-through">
+                    ${product.precioAnterior.toLocaleString("es-AR")}
+                  </span>
+                )}
+                {discount !== null && (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[var(--color-pink-tint)] text-[var(--color-pink-deep)]">
+                    Ahorrás {discount}%
+                  </span>
+                )}
+              </div>
+
+              {product.descripcion && (
+                <p className="mt-5 text-[var(--color-ink-soft)] leading-relaxed">
+                  {product.descripcion}
+                </p>
+              )}
+
+              {/* talles */}
+              {requiresTalle && (
+                <div className="mt-7">
+                  <div className="flex items-baseline justify-between mb-2.5">
+                    <span className="text-xs uppercase tracking-widest font-semibold text-[var(--color-ink-mute)]">
+                      Talle
+                    </span>
+                    {talle && (
+                      <span className="text-sm font-semibold text-[var(--color-ink)]">
+                        Talle {talle}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {talles.map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => {
+                          setTalle(t);
+                          setTalleError(false);
+                        }}
+                        data-active={talle === t || undefined}
+                        className="min-w-12 h-11 px-3 rounded-xl border text-sm font-semibold [transition:background-color_.2s,border-color_.2s,color_.2s,box-shadow_.2s] bg-white border-[var(--color-rule)] text-[var(--color-ink)] hover:border-[var(--color-sky)] data-[active]:bg-[var(--color-sky)] data-[active]:text-white data-[active]:border-[var(--color-sky)] data-[active]:shadow-[var(--shadow-sky)]"
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                  {talleError && (
+                    <p className="mt-2 text-xs text-[var(--color-pink-deep)]">
+                      Elegí un talle antes de continuar.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* qty + add */}
+              <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="flex items-center bg-white border border-[var(--color-rule)] rounded-full self-start sm:self-auto">
+                  <button
+                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    aria-label="Restar"
+                    disabled={qty <= 1}
+                    className="w-10 h-10 grid place-items-center text-[var(--color-ink)] hover:bg-[var(--color-bg-tint)] rounded-l-full transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    −
+                  </button>
+                  <span className="w-10 text-center font-semibold">{qty}</span>
+                  <button
+                    onClick={() => setQty(qty + 1)}
+                    aria-label="Sumar"
+                    className="w-10 h-10 grid place-items-center text-[var(--color-ink)] hover:bg-[var(--color-bg-tint)] rounded-r-full transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
+                <MagicButton
+                  variant="primary"
+                  size="lg"
+                  className="flex-1"
+                  onClick={handleAdd}
+                  icon={<span aria-hidden>🛒</span>}
+                >
+                  Agregar al carrito
+                </MagicButton>
+              </div>
+
+              <a
+                href={whatsappLink(productInquiry(product))}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#25D366] text-white font-semibold shadow-[0_10px_24px_-10px_rgba(37,211,102,0.55)] hover:bg-[#1ebe57] transition-colors"
+              >
+                <WhatsappIcon /> Consultar por WhatsApp
+              </a>
+
+              {/* perks */}
+              <div className="mt-8 grid grid-cols-3 gap-2">
+                <Perk icon="🏬" label="Retiro" value="En el local" />
+                <Perk icon="🚚" label="Envío" value="A coordinar" />
+                <Perk icon="✅" label="Original" value="Licenciado" />
+              </div>
+            </Reveal>
+          </div>
         </div>
-      </div>
 
-      {related.length > 0 && (
-        <section className="mt-32">
-          <Reveal y={32} className="mb-10">
-            <span className="eyebrow">Te puede gustar</span>
-            <h2 className="display text-[clamp(2rem,5vw,4rem)] mt-3">
-              Más de <span className="gradient-text">{product.category}</span>.
-            </h2>
-          </Reveal>
-          <Reveal stagger={100} y={48} className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {related.map((p) => (
-              <ProductCard key={p.slug} product={p} />
-            ))}
-          </Reveal>
-        </section>
-      )}
+        {related.length > 0 && (
+          <section className="mt-20 md:mt-28">
+            <Reveal y={24} className="mb-8">
+              <span className="eyebrow">Te puede gustar</span>
+              <h2 className="display text-[clamp(1.75rem,4vw,2.5rem)] mt-2">
+                Más de{" "}
+                <span className="gradient-text-pink">
+                  {categoriaInfo?.nombre ?? product.categoria}
+                </span>
+                .
+              </h2>
+            </Reveal>
+            <Reveal stagger={80} y={32} className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+              {related.map((p) => (
+                <ProductCard key={p.slug} product={p} />
+              ))}
+            </Reveal>
+          </section>
+        )}
+      </div>
     </article>
   );
 }
 
-function Chip({ icon, label, value }: { icon: string; label: string; value: string }) {
+function Perk({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div className="glass rounded-[var(--radius-md)] p-3 flex flex-col items-center text-center">
+    <div className="card p-3 flex flex-col items-center text-center">
       <span className="text-xl">{icon}</span>
-      <span className="mt-1 text-[0.6rem] font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
+      <span className="mt-1 text-[0.65rem] font-mono uppercase tracking-wider text-[var(--color-ink-mute)]">
         {label}
       </span>
-      <span className="text-xs text-[var(--color-ivory)] font-medium">{value}</span>
+      <span className="text-xs text-[var(--color-ink)] font-semibold">{value}</span>
     </div>
+  );
+}
+
+function WhatsappIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+      <path d="M16 .4C7.4.4.5 7.3.5 15.9c0 2.8.7 5.5 2.1 7.9L.2 31.6l8-2.1c2.3 1.3 4.9 1.9 7.5 1.9 8.6 0 15.5-6.9 15.5-15.5C31.5 7.3 24.6.4 16 .4zm0 28.2c-2.3 0-4.6-.6-6.6-1.8l-.5-.3-4.7 1.2 1.3-4.6-.3-.5c-1.3-2-2-4.4-2-6.7C3.2 8.8 8.9 3.1 16 3.1c7.1 0 12.8 5.7 12.8 12.8 0 7.1-5.7 12.7-12.8 12.7zm7-9.5c-.4-.2-2.3-1.1-2.6-1.3-.4-.1-.6-.2-.9.2-.3.4-1 1.3-1.2 1.5-.2.2-.4.3-.8.1-.4-.2-1.7-.6-3.2-2-1.2-1.1-2-2.4-2.2-2.8-.2-.4 0-.6.2-.8.2-.2.4-.5.6-.7.2-.2.3-.4.4-.7.1-.3 0-.5-.1-.7l-1.2-2.9c-.3-.7-.6-.6-.9-.6h-.7c-.3 0-.7.1-1.1.5s-1.4 1.4-1.4 3.4 1.5 4 1.7 4.3c.2.3 3 4.6 7.2 6.4 1 .4 1.8.7 2.4.9.8.3 1.6.2 2.2.1.7-.1 2.3-.9 2.6-1.8.3-.9.3-1.7.2-1.8-.1-.1-.3-.2-.7-.4z" />
+    </svg>
   );
 }

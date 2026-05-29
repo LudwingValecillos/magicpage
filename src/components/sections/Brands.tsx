@@ -1,97 +1,105 @@
 "use client";
 
 /**
- * Brands — licensed character showcase.
- * Big horizontal cards (Marvel/Disney/Stitch/Frozen), each with its own
- * brand glow, character emoji and CTA. Stagger reveal on scroll.
+ * Brands — carrusel de marcas/personajes que vendemos.
+ * Marquee infinito con los logos del sitio (CDN externo).
+ * Duplica la lista 2x para que el loop sea seamless.
  */
 
-import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
-import { site } from "@/content/site";
+
+const CDN = "https://magicstore.com.ar/wp-content/uploads/2025/06";
+
+interface Brand {
+  nombre: string;
+  src: string;
+}
+
+const brands: Brand[] = [
+  { nombre: "Mickey Mouse",  src: `${CDN}/Sin-titulo-2-09-150x150.webp` },
+  { nombre: "Minnie Mouse",  src: `${CDN}/Sin-titulo-2-08-150x150.webp` },
+  { nombre: "Stitch",        src: `${CDN}/Sin-titulo-2-03-150x150.webp` },
+  { nombre: "Toy Story",     src: `${CDN}/Sin-titulo-2-11-150x150.webp` },
+  { nombre: "Rey León",      src: `${CDN}/Sin-titulo-2-12-150x150.webp` },
+  { nombre: "Princesas",     src: `${CDN}/logo_web_princesa-150x150.webp` },
+  { nombre: "Intensamente",  src: `${CDN}/logo_intensamente-01-150x150.webp` },
+  { nombre: "Spider-Man",    src: `${CDN}/logo-spider-01-01-150x150.webp` },
+  { nombre: "Avengers",      src: `${CDN}/logo-avengers-01-150x150.webp` },
+  { nombre: "Batman",        src: `${CDN}/LOGO_BATMAN-01.png-150x150.webp` },
+  { nombre: "Superman",      src: `${CDN}/LOGO_SUPERMAN-01.png-150x150.webp` },
+  { nombre: "Harry Potter",  src: `${CDN}/harry-potter-original.png-150x150.webp` },
+  { nombre: "Paw Patrol",    src: `${CDN}/Sin-titulo-2-07-150x150.webp` },
+  { nombre: "Bluey",         src: `${CDN}/bluey-1-150x150.jpg` },
+  { nombre: "Hello Kitty",   src: `${CDN}/hello-kitty-150x150.webp` },
+  { nombre: "Kuromi",        src: `${CDN}/kuromi-150x150.webp` },
+  { nombre: "We Bare Bears", src: `${CDN}/WE-BARE-BEARS-01.png-150x150.webp` },
+  { nombre: "Sonic",         src: `${CDN}/logo-sonic-01-150x150.webp` },
+];
+
+const loop = [...brands, ...brands];
 
 export function Brands() {
   return (
     <section
-      id="brands"
-      className="relative px-[var(--gutter)] py-[var(--section)]"
+      id="marcas"
+      className="relative px-[var(--gutter)] py-[var(--section)] overflow-hidden"
       style={{
         ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)",
-        ["--section" as string]: "clamp(3.5rem, 10vh, 9rem)",
+        ["--section" as string]: "clamp(2.5rem, 6vh, 4.5rem)",
       } as React.CSSProperties}
     >
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <Reveal y={32} className="max-w-2xl">
-          <span className="eyebrow">Universos oficiales</span>
-          <h2 className="display text-[clamp(2rem,5.5vw,4.5rem)] mt-3 leading-[1]">
-            Tus marcas <span className="gradient-text">favoritas</span>.
+      <div className="max-w-6xl mx-auto">
+        <Reveal y={24} className="text-center mb-8">
+          <span className="eyebrow">Personajes oficiales</span>
+          <h2 className="display text-[clamp(1.75rem,4vw,2.75rem)] mt-3">
+            Las <span className="gradient-text-sky">marcas</span> que vendemos.
           </h2>
-        </Reveal>
-        <Reveal y={20} className="text-[var(--color-ivory-dim)] text-xs font-mono uppercase tracking-widest">
-          Productos oficiales · 100% original
         </Reveal>
       </div>
 
-      <Reveal stagger={120} y={48} className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        {site.brands.map((b) => (
-          <Link
-            key={b.slug}
-            href={`/catalogo?cat=${b.slug}`}
-            className="group relative block rounded-[var(--radius-xl)] overflow-hidden h-[18rem] md:h-[22rem]"
-            style={{
-              background: `linear-gradient(135deg, ${b.bgFrom}, ${b.bgTo})`,
-            }}
-          >
-            {/* brand halo */}
+      <div
+        className="brands-marquee group relative -mx-[var(--gutter)] overflow-hidden"
+        style={{
+          maskImage: "linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)",
+          WebkitMaskImage: "linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)",
+        }}
+      >
+        <div className="brands-track flex w-max gap-10 sm:gap-12 px-[var(--gutter)] py-4">
+          {loop.map((b, i) => (
             <div
-              className="absolute -inset-32 opacity-50 group-hover:opacity-90 transition-opacity duration-700 blur-[100px]"
-              style={{ background: `radial-gradient(circle at 60% 60%, ${b.color}, transparent 60%)` }}
-            />
-
-            {/* gradient border accent */}
-            <div
-              className="absolute inset-0 rounded-[var(--radius-xl)] pointer-events-none"
-              style={{
-                boxShadow: `inset 0 0 0 1px ${b.color}30`,
-              }}
-            />
-
-            {/* character */}
-            <div
-              className="absolute right-4 sm:right-8 bottom-2 sm:bottom-4 text-[10rem] sm:text-[14rem] leading-none transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-6"
-              style={{ filter: `drop-shadow(0 20px 40px ${b.color}80)` }}
+              key={`${b.nombre}-${i}`}
+              className="shrink-0 w-20 sm:w-24 aspect-square grid place-items-center rounded-full bg-white border border-[var(--color-rule)] shadow-[var(--shadow-soft)] transition-transform duration-300 ease-[var(--ease-out-quart)] hover:scale-110 hover:-rotate-3"
+              title={b.nombre}
             >
-              {b.icon}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={b.src}
+                alt={b.nombre}
+                loading="lazy"
+                width={64}
+                height={64}
+                className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
+              />
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* meta */}
-            <div className="relative z-10 p-6 md:p-10 max-w-[55%]">
-              <span
-                className="inline-block text-[0.65rem] font-mono uppercase tracking-widest mb-2 px-2 py-1 rounded-full"
-                style={{
-                  background: `${b.color}1F`,
-                  color: b.color,
-                  border: `1px solid ${b.color}55`,
-                }}
-              >
-                {b.tagline}
-              </span>
-              <h3
-                className="display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[var(--color-ivory)] tracking-tight"
-                style={{ textShadow: `0 4px 30px ${b.color}55` }}
-              >
-                {b.name}
-              </h3>
-              <span
-                className="inline-flex items-center gap-2 mt-4 sm:mt-6 text-sm font-medium text-[var(--color-ivory)] group-hover:gap-3 transition-all duration-500"
-                style={{ color: b.color }}
-              >
-                Ver colección <span>→</span>
-              </span>
-            </div>
-          </Link>
-        ))}
-      </Reveal>
+      <style jsx>{`
+        .brands-track {
+          animation: brands-scroll 60s linear infinite;
+        }
+        .brands-marquee:hover .brands-track {
+          animation-play-state: paused;
+        }
+        @keyframes brands-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .brands-track { animation: none; }
+        }
+      `}</style>
     </section>
   );
 }

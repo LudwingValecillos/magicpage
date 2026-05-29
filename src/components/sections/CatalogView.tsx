@@ -1,191 +1,333 @@
 "use client";
 
 /**
- * CatalogView — interactive catalog. Reads products + categories from the
- * store (LocalStorageAdapter today, Supabase later) so admin edits are live.
+ * CatalogView — light, kid-friendly. Filtros por categoría + marca + oferta + búsqueda + sort.
+ * Lee productos del store (LocalStorageAdapter hoy, Firestore después).
+ * Soporta query params: ?cat=ropa, ?marca=disney, ?oferta=1, ?q=...
  */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { GradientMesh } from "@/components/visual/GradientMesh";
 import { useProducts } from "@/lib/store/useProducts";
-import type { Product } from "@/lib/store/types";
+import { useStore } from "@/lib/store/StoreProvider";
+import type { CategoriaSlug, MarcaSlug, Product } from "@/lib/store/types";
 
-type Sort = "destacado" | "precio-asc" | "precio-desc" | "rating";
+type Sort = "nuevos" | "precio-asc" | "precio-desc";
+
+const PAGE_SIZE = 48;
 
 export function CatalogView() {
-  const { visible: products, categories } = useProducts();
-  const [active, setActive] = useState<string | "todo">("todo");
-  const [sort, setSort] = useState<Sort>("destacado");
+  const params = useSearchParams();
+  const { ready } = useStore();
+  const { visibles, categorias, marcas } = useProducts();
+
+  const [cat, setCat] = useState<CategoriaSlug | "todo">("todo");
+  const [marca, setMarca] = useState<MarcaSlug | "todo">("todo");
+  const [oferta, setOferta] = useState(false);
   const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<Sort>("nuevos");
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const c = params?.get("cat");
+    if (c === "ropa" || c === "juguetes" || c === "accesorios") setCat(c);
+    const m = params?.get("marca");
+    if (m === "disney" || m === "marvel" || m === "otra") setMarca(m);
+    if (params?.get("oferta") === "1") setOferta(true);
+    const q = params?.get("q");
+    if (q) setQuery(q);
+  }, [params]);
 
   const filtered = useMemo<Product[]>(() => {
-    let list: Product[] = [...products];
-    if (active !== "todo") list = list.filter((p) => p.categorySlug === active);
+    let list = [...visibles];
+    if (cat !== "todo") list = list.filter((p) => p.categoria === cat);
+    if (marca !== "todo") list = list.filter((p) => p.marca === marca);
+    if (oferta) list = list.filter((p) => p.oferta);
     if (query.trim()) {
       const q = query.toLowerCase();
-      list = list.filter((p) => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+      list = list.filter(
+        (p) =>
+          p.nombre.toLowerCase().includes(q) ||
+          (p.descripcion ?? "").toLowerCase().includes(q),
+      );
     }
     switch (sort) {
-      case "precio-asc": list.sort((a, b) => a.price - b.price); break;
-      case "precio-desc": list.sort((a, b) => b.price - a.price); break;
-      case "rating": list.sort((a, b) => b.rating - a.rating); break;
+      case "precio-asc":
+        list.sort((a, b) => a.precio - b.precio);
+        break;
+      case "precio-desc":
+        list.sort((a, b) => b.precio - a.precio);
+        break;
+      case "nuevos":
+      default:
+        list.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
     }
     return list;
-  }, [active, sort, query, products]);
+  }, [visibles, cat, marca, oferta, query, sort]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [cat, marca, oferta, query, sort]);
+
+  const hasFilters = cat !== "todo" || marca !== "todo" || oferta || query.trim() !== "";
+  const clearFilters = () => {
+    setCat("todo");
+    setMarca("todo");
+    setOferta(false);
+    setQuery("");
+  };
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <section
       className="relative px-[var(--gutter)] pb-[var(--section)]"
       style={{
         ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)",
-        ["--section" as string]: "clamp(3.5rem, 10vh, 9rem)",
+        ["--section" as string]: "clamp(3rem, 8vh, 6rem)",
       } as React.CSSProperties}
     >
-      <GradientMesh variant="soft" />
-
-      {/* header */}
-      <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-        <Reveal y={32} className="max-w-2xl">
-          <span className="eyebrow">Catálogo</span>
-          <h1 className="display text-[clamp(2.5rem,7vw,6rem)] mt-3">
-            Todo el <span className="gradient-text">universo</span>.
-          </h1>
-        </Reveal>
-        <Reveal y={20} className="flex items-center gap-3 w-full md:w-auto">
-          <input
-            type="search"
-            placeholder="Buscar..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="glass rounded-full px-4 md:px-5 py-3 text-sm text-[var(--color-ivory)] placeholder:text-[var(--color-ivory-mute)] outline-none focus:bg-white/10 transition-colors flex-1 md:w-64 md:flex-none"
-          />
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as Sort)}
-            className="glass rounded-full px-4 md:px-5 py-3 text-sm text-[var(--color-ivory)] outline-none cursor-pointer hover:bg-white/10 transition-colors shrink-0"
-          >
-            <option value="destacado">Destacados</option>
-            <option value="precio-asc">Precio ↑</option>
-            <option value="precio-desc">Precio ↓</option>
-            <option value="rating">Mejor rating</option>
-          </select>
-        </Reveal>
-      </div>
-
-      {/* mobile filter chips */}
-      <div className="lg:hidden -mx-[var(--gutter)] mb-6 px-[var(--gutter)] overflow-x-auto no-scrollbar">
-        <div className="flex gap-2 w-max">
-          <ChipFilter label="Todo" active={active === "todo"} onClick={() => setActive("todo")} />
-          {categories.map((c) => {
-            const count = products.filter((p) => p.categorySlug === c.slug).length;
-            if (count === 0) return null;
-            return (
-              <ChipFilter
-                key={c.slug}
-                label={`${c.icon} ${c.name}`}
-                active={active === c.slug}
-                onClick={() => setActive(c.slug)}
-              />
-            );
-          })}
+      <div className="max-w-6xl mx-auto">
+        {/* header */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8 md:mb-10">
+          <Reveal y={24} className="max-w-2xl">
+            <span className="eyebrow">Catálogo</span>
+            <h1 className="display text-[clamp(2.25rem,6vw,4rem)] mt-3">
+              Todos nuestros <span className="gradient-text-sky">productos</span>.
+            </h1>
+          </Reveal>
+          <Reveal y={16} className="flex items-center gap-2 w-full md:w-auto">
+            <input
+              type="search"
+              placeholder="Buscar..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="flex-1 md:w-64 md:flex-none px-4 py-2.5 rounded-full bg-white border border-[var(--color-rule)] text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-mute)] outline-none focus:border-[var(--color-sky)] transition-colors"
+            />
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as Sort)}
+              className="px-4 py-2.5 rounded-full bg-white border border-[var(--color-rule)] text-sm text-[var(--color-ink)] outline-none cursor-pointer hover:border-[var(--color-sky)] transition-colors shrink-0"
+            >
+              <option value="nuevos">Más nuevos</option>
+              <option value="precio-asc">Precio ↑</option>
+              <option value="precio-desc">Precio ↓</option>
+            </select>
+          </Reveal>
         </div>
-      </div>
 
-      <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* desktop sidebar */}
-        <Reveal y={24} className="hidden lg:block lg:col-span-3">
-          <aside className="glass rounded-[var(--radius-lg)] p-6 sticky top-28">
-            <h3 className="text-[0.7rem] font-mono uppercase tracking-widest text-[var(--color-ivory-mute)] mb-4">
-              Categorías
-            </h3>
-            <ul className="flex flex-col gap-1">
-              <FilterItem label="Todo" count={products.length} active={active === "todo"} onClick={() => setActive("todo")} />
-              {categories.map((c) => {
-                const count = products.filter((p) => p.categorySlug === c.slug).length;
-                if (count === 0) return null;
-                return (
-                  <FilterItem
-                    key={c.slug}
-                    label={`${c.icon}  ${c.name}`}
-                    count={count}
-                    active={active === c.slug}
-                    onClick={() => setActive(c.slug)}
-                  />
-                );
-              })}
-            </ul>
-
-            <div className="mt-8 pt-6 border-t border-[var(--color-rule)]">
-              <h3 className="text-[0.7rem] font-mono uppercase tracking-widest text-[var(--color-ivory-mute)] mb-4">
-                Resultados
-              </h3>
-              <div className="flex items-end gap-2">
-                <span className="font-display text-4xl gradient-text-blue" style={{ fontFamily: "var(--font-display)" }}>
-                  {filtered.length}
-                </span>
-                <span className="text-sm text-[var(--color-ivory-dim)] mb-1">productos</span>
-              </div>
+        {/* chips */}
+        <Reveal y={16}>
+          <div className="-mx-[var(--gutter)] px-[var(--gutter)] overflow-x-auto no-scrollbar mb-3">
+            <div className="flex gap-2 w-max">
+              <Chip label="Todo" active={cat === "todo"} onClick={() => setCat("todo")} />
+              {categorias.map((c) => (
+                <Chip
+                  key={c.slug}
+                  label={`${c.emoji} ${c.nombre}`}
+                  active={cat === c.slug}
+                  onClick={() => setCat(c.slug)}
+                />
+              ))}
             </div>
-          </aside>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Chip label="Marca: todas" active={marca === "todo"} onClick={() => setMarca("todo")} small />
+            {marcas.map((m) => (
+              <Chip
+                key={m.slug}
+                label={m.nombre}
+                active={marca === m.slug}
+                onClick={() => setMarca(m.slug)}
+                small
+              />
+            ))}
+            <Chip
+              label="Solo ofertas"
+              active={oferta}
+              onClick={() => setOferta((v) => !v)}
+              small
+            />
+          </div>
         </Reveal>
 
-        {/* grid */}
-        <div className="lg:col-span-9">
-          <div className="lg:hidden mb-4 text-xs font-mono uppercase tracking-widest text-[var(--color-ivory-mute)]">
-            {filtered.length} producto{filtered.length === 1 ? "" : "s"}
-          </div>
-
-          {filtered.length === 0 ? (
-            <Reveal y={24}>
-              <div className="glass rounded-[var(--radius-lg)] p-10 sm:p-16 text-center">
-                <span className="text-5xl sm:text-6xl">✦</span>
-                <p className="mt-4 text-[var(--color-ivory-dim)]">Sin resultados. Probá con otra categoría.</p>
-              </div>
-            </Reveal>
-          ) : (
-            <Reveal stagger={70} y={48} className="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-              {filtered.map((p) => (
-                <ProductCard key={p.slug} product={p} />
-              ))}
-            </Reveal>
+        {/* count */}
+        <div className="mt-6 mb-4 flex items-center justify-between gap-3 text-sm text-[var(--color-ink-mute)]">
+          <span>
+            {!ready ? (
+              "Cargando productos..."
+            ) : (
+              <>
+                <span className="font-bold text-[var(--color-ink)]">{filtered.length}</span>{" "}
+                {filtered.length === 1 ? "producto" : "productos"}
+              </>
+            )}
+          </span>
+          {ready && hasFilters && (
+            <button
+              onClick={clearFilters}
+              className="font-semibold text-[var(--color-sky-deep)] hover:underline underline-offset-4"
+            >
+              Limpiar filtros
+            </button>
           )}
         </div>
+
+        {/* grid */}
+        {!ready ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="card overflow-hidden">
+                <div className="aspect-square bg-[var(--color-bg-tint)] animate-pulse" />
+                <div className="p-4 flex flex-col gap-2">
+                  <div className="h-2.5 w-1/3 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+                  <div className="h-3.5 w-4/5 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+                  <div className="h-4 w-1/4 rounded-full bg-[var(--color-bg-tint)] animate-pulse mt-1" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="card p-10 sm:p-16 text-center flex flex-col items-center">
+            <span className="text-5xl sm:text-6xl float-soft">🧸</span>
+            <h3 className="mt-5 font-display text-xl text-[var(--color-ink)]">
+              No encontramos nada por acá
+            </h3>
+            <p className="mt-2 text-[var(--color-ink-soft)] max-w-sm">
+              Probá con otra categoría, otra marca, o sacá los filtros para ver todo el catálogo.
+            </p>
+            {hasFilters && (
+              <button
+                onClick={clearFilters}
+                className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold bg-[var(--color-sky)] text-white shadow-[var(--shadow-sky)] hover:bg-[var(--color-sky-deep)] [transition:background-color_.2s,transform_.2s]"
+              >
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+              {pageItems.map((p) => (
+                <ProductCard key={p.slug} product={p} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onChange={(p) => {
+                  setPage(p);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
+            )}
+          </>
+        )}
       </div>
     </section>
   );
 }
 
-function ChipFilter({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+function Pagination({
+  page,
+  totalPages,
+  onChange,
+}: {
+  page: number;
+  totalPages: number;
+  onChange: (p: number) => void;
+}) {
+  const pages = pageNumbers(page, totalPages);
+  return (
+    <nav
+      className="mt-10 flex items-center justify-center gap-1.5 flex-wrap"
+      aria-label="Paginación"
+    >
+      <PgBtn disabled={page === 1} onClick={() => onChange(page - 1)} label="‹" />
+      {pages.map((p, i) =>
+        p === "…" ? (
+          <span key={`gap-${i}`} className="px-2 text-[var(--color-ink-mute)]">
+            …
+          </span>
+        ) : (
+          <PgBtn
+            key={p}
+            active={p === page}
+            onClick={() => onChange(p)}
+            label={String(p)}
+          />
+        ),
+      )}
+      <PgBtn
+        disabled={page === totalPages}
+        onClick={() => onChange(page + 1)}
+        label="›"
+      />
+    </nav>
+  );
+}
+
+function PgBtn({
+  label,
+  onClick,
+  active = false,
+  disabled = false,
+}: {
+  label: string;
+  onClick: () => void;
+  active?: boolean;
+  disabled?: boolean;
+}) {
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-        active
-          ? "bg-gradient-to-r from-[var(--color-blue-deep)] to-[var(--color-blue)] text-white shadow-[0_4px_16px_-4px_rgba(77,168,255,0.6)]"
-          : "glass text-[var(--color-ivory-dim)] hover:text-[var(--color-ivory)]"
-      }`}
+      disabled={disabled}
+      data-active={active || undefined}
+      className="min-w-10 h-10 px-3 rounded-full text-sm font-semibold border border-[var(--color-rule)] bg-white text-[var(--color-ink)] hover:border-[var(--color-sky)] data-[active]:bg-[var(--color-sky)] data-[active]:text-white data-[active]:border-[var(--color-sky)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
     >
       {label}
     </button>
   );
 }
 
-function FilterItem({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
+function pageNumbers(current: number, total: number): (number | "…")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const set = new Set<number>([1, total, current, current - 1, current + 1]);
+  if (current <= 3) [2, 3, 4].forEach((n) => set.add(n));
+  if (current >= total - 2) [total - 1, total - 2, total - 3].forEach((n) => set.add(n));
+  const sorted = [...set].filter((n) => n >= 1 && n <= total).sort((a, b) => a - b);
+  const out: (number | "…")[] = [];
+  for (let i = 0; i < sorted.length; i++) {
+    if (i > 0 && sorted[i] - sorted[i - 1] > 1) out.push("…");
+    out.push(sorted[i]);
+  }
+  return out;
+}
+
+function Chip({
+  label,
+  active,
+  onClick,
+  small = false,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  small?: boolean;
+}) {
   return (
-    <li>
-      <button
-        onClick={onClick}
-        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-full text-sm transition-all ${
-          active
-            ? "bg-gradient-to-r from-[var(--color-blue)]/20 to-[var(--color-violet)]/20 text-[var(--color-ivory)] border border-[var(--color-blue)]/40"
-            : "text-[var(--color-ivory-dim)] hover:text-[var(--color-ivory)] hover:bg-white/5"
-        }`}
-      >
-        <span>{label}</span>
-        <span className="text-xs font-mono text-[var(--color-ivory-mute)]">{count}</span>
-      </button>
-    </li>
+    <button
+      onClick={onClick}
+      data-active={active || undefined}
+      className={`chip shrink-0 whitespace-nowrap ${small ? "text-xs px-3 py-1.5" : ""}`}
+    >
+      {label}
+    </button>
   );
 }
