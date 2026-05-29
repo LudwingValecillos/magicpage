@@ -28,10 +28,24 @@ export function ProductDetail({ slug }: { slug: string }) {
 
   if (!ready) {
     return (
-      <div className="min-h-[60vh] grid place-items-center">
-        <span className="text-sm text-[var(--color-ink-mute)] uppercase tracking-widest font-mono">
-          Cargando...
-        </span>
+      <div
+        className="px-[var(--gutter)] pb-[var(--section)]"
+        style={{
+          ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)",
+          ["--section" as string]: "clamp(3rem, 8vh, 6rem)",
+        } as React.CSSProperties}
+      >
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          <div className="lg:col-span-7 aspect-square rounded-[var(--radius-xl)] bg-[var(--color-bg-tint)] animate-pulse" />
+          <div className="lg:col-span-5 flex flex-col gap-4 pt-2">
+            <div className="h-3 w-24 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+            <div className="h-8 w-4/5 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+            <div className="h-10 w-1/3 rounded-full bg-[var(--color-bg-tint)] animate-pulse mt-2" />
+            <div className="h-4 w-full rounded-full bg-[var(--color-bg-tint)] animate-pulse mt-4" />
+            <div className="h-4 w-2/3 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+            <div className="h-14 w-full rounded-full bg-[var(--color-bg-tint)] animate-pulse mt-6" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -63,6 +77,10 @@ export function ProductDetail({ slug }: { slug: string }) {
     .slice(0, 4);
   const images = product.imagenes ?? [];
   const hasImages = images.length > 0;
+  const discount =
+    product.oferta && product.precioAnterior && product.precioAnterior > product.precio
+      ? Math.round((1 - product.precio / product.precioAnterior) * 100)
+      : null;
 
   const talles = product.talles ?? [];
   const requiresTalle = talles.length > 0;
@@ -105,13 +123,14 @@ export function ProductDetail({ slug }: { slug: string }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* gallery */}
           <Reveal y={32} className="lg:col-span-7">
-            <div className="relative aspect-square rounded-[var(--radius-xl)] overflow-hidden card bg-[var(--color-bg-tint)]">
+            <div className="group relative aspect-square rounded-[var(--radius-xl)] overflow-hidden card bg-[var(--color-bg-tint)]">
               {hasImages ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
+                  key={thumb}
                   src={images[thumb].url}
                   alt={product.nombre}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover [animation:fade-img_.4s_var(--ease-out-quart)] transition-transform duration-[600ms] ease-[var(--ease-out-quart)] group-hover:scale-105"
                 />
               ) : (
                 <div className="absolute inset-0 grid place-items-center">
@@ -125,7 +144,8 @@ export function ProductDetail({ slug }: { slug: string }) {
               )}
 
               <div className="absolute top-5 left-5 flex flex-col gap-1.5">
-                {product.oferta && <Badge variant="oferta">Oferta</Badge>}
+                {discount !== null && <Badge variant="oferta">-{discount}%</Badge>}
+                {product.oferta && discount === null && <Badge variant="oferta">Oferta</Badge>}
                 {product.marca === "disney" && <Badge variant="disney">Disney</Badge>}
                 {product.marca === "marvel" && <Badge variant="marvel">Marvel</Badge>}
               </div>
@@ -137,9 +157,10 @@ export function ProductDetail({ slug }: { slug: string }) {
                   <button
                     key={i}
                     onClick={() => setThumb(i)}
-                    className={`aspect-square rounded-[var(--radius-md)] overflow-hidden border-2 transition-all ${
+                    aria-label={`Ver imagen ${i + 1}`}
+                    className={`aspect-square rounded-[var(--radius-md)] overflow-hidden border-2 [transition:border-color_.2s_var(--ease-out-quart),transform_.2s_var(--ease-out-quart)] ${
                       thumb === i
-                        ? "border-[var(--color-sky)]"
+                        ? "border-[var(--color-sky)] scale-[0.96]"
                         : "border-[var(--color-rule)] hover:border-[var(--color-sky-soft)]"
                     }`}
                   >
@@ -162,12 +183,17 @@ export function ProductDetail({ slug }: { slug: string }) {
               </h1>
 
               <div className="mt-6 flex items-baseline gap-3 flex-wrap">
-                <span className="font-display text-4xl md:text-5xl text-[var(--color-sky-deep)]">
+                <span className="font-display text-4xl md:text-5xl text-[var(--color-ink)] tracking-tight">
                   ${product.precio.toLocaleString("es-AR")}
                 </span>
                 {product.oferta && product.precioAnterior && (
                   <span className="text-lg text-[var(--color-ink-mute)] line-through">
                     ${product.precioAnterior.toLocaleString("es-AR")}
+                  </span>
+                )}
+                {discount !== null && (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[var(--color-pink-tint)] text-[var(--color-pink-deep)]">
+                    Ahorrás {discount}%
                   </span>
                 )}
               </div>
@@ -200,7 +226,7 @@ export function ProductDetail({ slug }: { slug: string }) {
                           setTalleError(false);
                         }}
                         data-active={talle === t || undefined}
-                        className="min-w-12 h-11 px-3 rounded-xl border text-sm font-semibold transition-all bg-white border-[var(--color-rule)] text-[var(--color-ink)] hover:border-[var(--color-sky)] data-[active]:bg-[var(--color-sky)] data-[active]:text-white data-[active]:border-[var(--color-sky)] data-[active]:shadow-[var(--shadow-sky)]"
+                        className="min-w-12 h-11 px-3 rounded-xl border text-sm font-semibold [transition:background-color_.2s,border-color_.2s,color_.2s,box-shadow_.2s] bg-white border-[var(--color-rule)] text-[var(--color-ink)] hover:border-[var(--color-sky)] data-[active]:bg-[var(--color-sky)] data-[active]:text-white data-[active]:border-[var(--color-sky)] data-[active]:shadow-[var(--shadow-sky)]"
                       >
                         {t}
                       </button>
@@ -220,7 +246,8 @@ export function ProductDetail({ slug }: { slug: string }) {
                   <button
                     onClick={() => setQty(Math.max(1, qty - 1))}
                     aria-label="Restar"
-                    className="w-10 h-10 grid place-items-center text-[var(--color-ink)] hover:bg-[var(--color-bg-tint)] rounded-l-full transition-colors"
+                    disabled={qty <= 1}
+                    className="w-10 h-10 grid place-items-center text-[var(--color-ink)] hover:bg-[var(--color-bg-tint)] rounded-l-full transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     −
                   </button>

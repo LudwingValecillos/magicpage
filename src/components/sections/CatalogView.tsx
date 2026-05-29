@@ -72,6 +72,14 @@ export function CatalogView() {
     setPage(1);
   }, [cat, marca, oferta, query, sort]);
 
+  const hasFilters = cat !== "todo" || marca !== "todo" || oferta || query.trim() !== "";
+  const clearFilters = () => {
+    setCat("todo");
+    setMarca("todo");
+    setOferta(false);
+    setQuery("");
+  };
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
@@ -148,25 +156,58 @@ export function CatalogView() {
         </Reveal>
 
         {/* count */}
-        <div className="mt-6 mb-4 text-sm text-[var(--color-ink-mute)]">
-          {!ready
-            ? "Cargando productos..."
-            : `${filtered.length} ${filtered.length === 1 ? "producto" : "productos"}`}
+        <div className="mt-6 mb-4 flex items-center justify-between gap-3 text-sm text-[var(--color-ink-mute)]">
+          <span>
+            {!ready ? (
+              "Cargando productos..."
+            ) : (
+              <>
+                <span className="font-bold text-[var(--color-ink)]">{filtered.length}</span>{" "}
+                {filtered.length === 1 ? "producto" : "productos"}
+              </>
+            )}
+          </span>
+          {ready && hasFilters && (
+            <button
+              onClick={clearFilters}
+              className="font-semibold text-[var(--color-sky-deep)] hover:underline underline-offset-4"
+            >
+              Limpiar filtros
+            </button>
+          )}
         </div>
 
         {/* grid */}
         {!ready ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="aspect-square card bg-[var(--color-bg-tint)] animate-pulse" />
+              <div key={i} className="card overflow-hidden">
+                <div className="aspect-square bg-[var(--color-bg-tint)] animate-pulse" />
+                <div className="p-4 flex flex-col gap-2">
+                  <div className="h-2.5 w-1/3 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+                  <div className="h-3.5 w-4/5 rounded-full bg-[var(--color-bg-tint)] animate-pulse" />
+                  <div className="h-4 w-1/4 rounded-full bg-[var(--color-bg-tint)] animate-pulse mt-1" />
+                </div>
+              </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="card p-10 sm:p-16 text-center">
-            <span className="text-5xl sm:text-6xl">🔍</span>
-            <p className="mt-4 text-[var(--color-ink-soft)]">
-              Sin resultados. Probá con otra categoría o sacá los filtros.
+          <div className="card p-10 sm:p-16 text-center flex flex-col items-center">
+            <span className="text-5xl sm:text-6xl float-soft">🧸</span>
+            <h3 className="mt-5 font-display text-xl text-[var(--color-ink)]">
+              No encontramos nada por acá
+            </h3>
+            <p className="mt-2 text-[var(--color-ink-soft)] max-w-sm">
+              Probá con otra categoría, otra marca, o sacá los filtros para ver todo el catálogo.
             </p>
+            {hasFilters && (
+              <button
+                onClick={clearFilters}
+                className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold bg-[var(--color-sky)] text-white shadow-[var(--shadow-sky)] hover:bg-[var(--color-sky-deep)] [transition:background-color_.2s,transform_.2s]"
+              >
+                Limpiar filtros
+              </button>
+            )}
           </div>
         ) : (
           <>

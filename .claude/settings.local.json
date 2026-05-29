@@ -12,7 +12,9 @@
       "Bash(node *)",
       "Bash(Select-Object -Last 30)",
       "WebFetch(domain:magicstore.com.ar)",
-      "Bash(npx skills *)"
+      "Bash(npx skills *)",
+      "Bash(rm -rf .next)",
+      "Bash(echo \"EXIT: $?\")"
     ]
   }
 }

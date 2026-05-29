@@ -51,11 +51,23 @@
   --radius-xl: 2rem;
   --radius-pill: 999px;
 
-  --shadow-card: 0 4px 16px -4px rgba(28, 36, 52, 0.08);
-  --shadow-card-hover: 0 12px 32px -8px rgba(28, 36, 52, 0.15);
+  --shadow-card: 0 2px 8px -3px rgba(28, 36, 52, 0.06), 0 8px 24px -12px rgba(28, 36, 52, 0.10);
+  --shadow-card-hover: 0 6px 16px -6px rgba(28, 36, 52, 0.12), 0 20px 40px -16px rgba(61, 181, 224, 0.22);
   --shadow-soft: 0 8px 24px -8px rgba(28, 36, 52, 0.12);
-  --shadow-sky: 0 8px 24px -8px rgba(61, 181, 224, 0.45);
-  --shadow-pink: 0 8px 24px -8px rgba(255, 107, 170, 0.45);
+  --shadow-sky: 0 6px 20px -6px rgba(61, 181, 224, 0.5);
+  --shadow-pink: 0 6px 20px -6px rgba(255, 107, 170, 0.5);
+
+  /* easings — Emil-style strong curves */
+  --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* z-index scale semántico */
+  --z-sticky: 30;
+  --z-drawer-backdrop: 50;
+  --z-drawer: 60;
+  --z-modal: 70;
+  --z-toast: 80;
 }
 
 /* =====================================================================
@@ -87,6 +99,25 @@ body {
   color: white;
 }
 
+/* focus visible — accesible y on-brand (no en :focus para no molestar al click) */
+:focus-visible {
+  outline: 2.5px solid var(--color-sky);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.theme-admin :focus-visible {
+  outline-color: var(--color-sky-soft);
+}
+
+/* feedback de presión universal para elementos accionables */
+@media (hover: hover) and (pointer: fine) {
+  a:active,
+  button:active:not(:disabled),
+  [role="button"]:active {
+    transform: scale(0.97);
+  }
+}
+
 /* =====================================================================
    ADMIN OVERRIDE — dark
    ===================================================================== */
@@ -109,22 +140,42 @@ body.theme-admin {
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
+  text-wrap: balance;
 }
 
 .display-tight {
   font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.025em;
   line-height: 0.95;
+  text-wrap: balance;
 }
 
 .eyebrow {
-  display: inline-block;
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  font-weight: 800;
   color: var(--color-sky-deep);
+  background: var(--color-sky-tint);
+  border: 1px solid color-mix(in srgb, var(--color-sky-soft) 60%, transparent);
+}
+.eyebrow::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+/* variante rosa para alternar el ritmo entre secciones */
+.eyebrow-pink {
+  color: var(--color-pink-deep);
+  background: var(--color-pink-tint);
+  border-color: color-mix(in srgb, var(--color-pink-soft) 60%, transparent);
 }
 
 .label {
@@ -164,11 +215,13 @@ body.theme-admin {
   box-shadow: var(--shadow-card);
 }
 .card-hover {
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  transition: transform 0.4s var(--ease-out-quart), box-shadow 0.4s var(--ease-out-quart);
 }
-.card-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-card-hover);
+@media (hover: hover) and (pointer: fine) {
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+  }
 }
 
 .chip {
@@ -182,7 +235,8 @@ body.theme-admin {
   background: var(--color-bg-soft);
   border: 1px solid var(--color-rule);
   color: var(--color-ink-soft);
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  transition: background 0.2s var(--ease-out-quart), border-color 0.2s var(--ease-out-quart),
+    color 0.2s var(--ease-out-quart), transform 0.2s var(--ease-out-quart);
 }
 .chip:hover {
   background: var(--color-sky-tint);
@@ -210,6 +264,10 @@ body.theme-admin {
 @keyframes pulse-soft {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
+}
+@keyframes fade-img {
+  from { opacity: 0; transform: scale(1.03); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .float-soft { animation: float-soft 5s ease-in-out infinite; }

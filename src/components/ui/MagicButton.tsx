@@ -50,14 +50,18 @@ export function MagicButton({
       "text-[var(--color-sky-deep)] underline-offset-4 hover:underline px-0 py-0",
   };
 
-  const cls = `inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 ${
+  const cls = `group inline-flex items-center justify-center gap-2 rounded-full font-semibold [transition:background-color_.2s_var(--ease-out-quart),color_.2s_var(--ease-out-quart),border-color_.2s_var(--ease-out-quart),box-shadow_.2s_var(--ease-out-quart),transform_.2s_var(--ease-out-quart)] ${
     variant === "link" ? "" : sizes[size]
   } ${styles[variant]} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`;
 
   const inner = (
     <>
       {children}
-      {icon}
+      {icon && (
+        <span className="inline-flex transition-transform duration-200 ease-[var(--ease-out-quart)] group-hover:translate-x-0.5">
+          {icon}
+        </span>
+      )}
     </>
   );
 

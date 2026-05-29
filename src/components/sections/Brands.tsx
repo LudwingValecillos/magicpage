@@ -68,7 +68,7 @@ export function Brands() {
           {loop.map((b, i) => (
             <div
               key={`${b.nombre}-${i}`}
-              className="shrink-0 w-20 sm:w-24 aspect-square grid place-items-center rounded-full bg-white border border-[var(--color-rule)] shadow-[var(--shadow-soft)] hover:scale-110 transition-transform"
+              className="shrink-0 w-20 sm:w-24 aspect-square grid place-items-center rounded-full bg-white border border-[var(--color-rule)] shadow-[var(--shadow-soft)] transition-transform duration-300 ease-[var(--ease-out-quart)] hover:scale-110 hover:-rotate-3"
               title={b.nombre}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}

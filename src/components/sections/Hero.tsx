@@ -65,7 +65,7 @@ export function Hero() {
         </Reveal>
 
         <Reveal y={24}>
-          <h1 className="display-tight text-[clamp(2.5rem,9vw,6.5rem)] leading-[0.95]">
+          <h1 className="display-tight text-[clamp(2.5rem,8vw,6rem)] leading-[0.95]">
             <span className="block text-[var(--color-ink)]">{site.hero.headline[0]}</span>
             <span className="block gradient-text-happy">{site.hero.headline[1]}</span>
           </h1>

@@ -37,7 +37,7 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
           <img
             src={cover}
             alt={product.nombre}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[600ms] ease-[var(--ease-out-quart)] group-hover:scale-[1.07]"
           />
         ) : (
           <div className="absolute inset-0 grid place-items-center text-6xl text-[var(--color-ink-mute)]/30">
@@ -53,8 +53,8 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
 
         <button
           onClick={handleAdd}
-          aria-label="Agregar al carrito"
-          className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-white text-[var(--color-ink)] grid place-items-center shadow-[var(--shadow-soft)] opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-[var(--color-sky)] hover:text-white"
+          aria-label={`Agregar ${product.nombre} al carrito`}
+          className="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-[var(--color-sky)] text-white grid place-items-center text-xl leading-none shadow-[var(--shadow-sky)] opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 md:group-hover:opacity-100 md:group-hover:translate-y-0 [transition:opacity_.3s_var(--ease-out-quart),transform_.3s_var(--ease-out-quart),background-color_.2s] hover:bg-[var(--color-sky-deep)]"
         >
           +
         </button>
@@ -68,7 +68,7 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
           {product.nombre}
         </h3>
         <div className="mt-auto pt-2 flex items-baseline gap-2">
-          <span className="text-lg font-bold text-[var(--color-sky-deep)]">
+          <span className="text-xl font-extrabold text-[var(--color-ink)] tracking-tight">
             ${product.precio.toLocaleString("es-AR")}
           </span>
           {product.oferta && product.precioAnterior && (

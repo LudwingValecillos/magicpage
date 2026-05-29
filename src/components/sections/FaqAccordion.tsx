@@ -44,8 +44,8 @@ export function FaqAccordion() {
                 >
                   <span className="font-display text-lg text-[var(--color-ink)]">{item.q}</span>
                   <span
-                    className="shrink-0 w-7 h-7 rounded-full bg-[var(--color-sky)] text-white grid place-items-center text-base transition-transform"
-                    style={{ transform: expanded ? "rotate(45deg)" : "rotate(0)" }}
+                    className="shrink-0 w-7 h-7 rounded-full bg-[var(--color-sky)] text-white grid place-items-center text-base transition-transform duration-300 ease-[var(--ease-out-quart)]"
+                    style={{ transform: expanded ? "rotate(135deg)" : "rotate(0)" }}
                   >
                     +
                   </span>

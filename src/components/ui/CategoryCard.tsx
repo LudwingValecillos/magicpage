@@ -23,7 +23,7 @@ export function CategoryCard({ categoria, count, className = "" }: CategoryCardP
       }}
     >
       <span
-        className="text-7xl sm:text-8xl mb-4 transition-transform duration-300 group-hover:scale-110 hover-wiggle"
+        className="text-7xl sm:text-8xl mb-4 transition-transform duration-300 ease-[var(--ease-out-quart)] group-hover:scale-110 group-hover:-rotate-6"
         style={{ filter: `drop-shadow(0 8px 20px ${categoria.color}40)` }}
       >
         {categoria.emoji}
@@ -36,11 +36,14 @@ export function CategoryCard({ categoria, count, className = "" }: CategoryCardP
           {count} {count === 1 ? "producto" : "productos"}
         </span>
       )}
-      <span
-        className="mt-5 inline-flex items-center gap-2 text-sm font-semibold transition-transform duration-300 group-hover:translate-x-1"
-        style={{ color: categoria.color }}
-      >
-        Ver →
+      <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-[var(--color-ink-soft)]">
+        Ver
+        <span
+          className="grid place-items-center w-5 h-5 rounded-full text-white text-xs transition-transform duration-300 ease-[var(--ease-out-quart)] group-hover:translate-x-1"
+          style={{ background: categoria.color }}
+        >
+          →
+        </span>
       </span>
     </Link>
   );

@@ -6,16 +6,16 @@
  */
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/store/useCart";
 import { checkoutMessage, whatsappLink, WHATSAPP_NUMBER } from "@/lib/whatsapp";
 import type { CheckoutData } from "@/lib/store/types";
 import { MagicButton } from "@/components/ui/MagicButton";
 
+type Done = { nombre: string; count: number; total: number; url: string };
+
 export function CheckoutForm() {
-  const router = useRouter();
-  const { items, subtotal, clear } = useCart();
+  const { items, count, subtotal, clear } = useCart();
 
   const [data, setData] = useState<CheckoutData>({
     nombre: "",
@@ -28,6 +28,7 @@ export function CheckoutForm() {
     comentarios: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState<Done | null>(null);
 
   const setField = <K extends keyof CheckoutData>(k: K, v: CheckoutData[K]) =>
     setData((d) => ({ ...d, [k]: v }));
@@ -37,10 +38,63 @@ export function CheckoutForm() {
     [data, items, subtotal],
   );
 
+  if (done) {
+    return (
+      <div className="max-w-xl mx-auto text-center py-16 md:py-20 flex flex-col items-center">
+        <div className="relative grid place-items-center w-24 h-24 rounded-full bg-[var(--color-mint)]/15 [animation:fade-img_.5s_var(--ease-out-quart)]">
+          <span className="absolute inset-0 rounded-full bg-[var(--color-mint)]/20 pulse-soft" />
+          <svg
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--color-mint)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="relative"
+          >
+            <path d="m5 12 5 5L20 7" />
+          </svg>
+        </div>
+        <h1 className="display text-3xl md:text-4xl mt-6 text-[var(--color-ink)]">
+          ¡Listo, {done.nombre.split(" ")[0] || "gracias"}! 🎉
+        </h1>
+        <p className="mt-3 text-[var(--color-ink-soft)] max-w-md">
+          Te abrimos WhatsApp con tu pedido de{" "}
+          <span className="font-semibold text-[var(--color-ink)]">
+            {done.count} {done.count === 1 ? "producto" : "productos"}
+          </span>{" "}
+          por{" "}
+          <span className="font-semibold text-[var(--color-ink)]">
+            ${done.total.toLocaleString("es-AR")}
+          </span>
+          . Coordinamos pago y entrega por chat.
+        </p>
+        <p className="mt-2 text-sm text-[var(--color-ink-mute)]">
+          ¿No se abrió el chat? Tocá el botón de abajo.
+        </p>
+        <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
+          <a
+            href={done.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-white bg-[#25D366] shadow-[0_10px_24px_-10px_rgba(37,211,102,0.55)] hover:bg-[#1ebe57] [transition:background-color_.2s,transform_.2s]"
+          >
+            📱 Abrir WhatsApp
+          </a>
+          <MagicButton href="/catalogo" variant="ghost">
+            Seguir comprando
+          </MagicButton>
+        </div>
+      </div>
+    );
+  }
+
   if (items.length === 0) {
     return (
       <div className="max-w-2xl mx-auto text-center py-20">
-        <span className="text-6xl">🛍️</span>
+        <span className="text-6xl float-soft inline-block">🛍️</span>
         <h1 className="display text-3xl md:text-4xl mt-4 text-[var(--color-ink)]">
           Tu carrito está vacío
         </h1>
@@ -48,7 +102,7 @@ export function CheckoutForm() {
           Agregá algunos productos antes de finalizar la compra.
         </p>
         <div className="mt-8">
-          <MagicButton href="/catalogo" variant="primary">
+          <MagicButton href="/catalogo" variant="primary" icon={<span aria-hidden>→</span>}>
             Ir al catálogo
           </MagicButton>
         </div>
@@ -69,8 +123,8 @@ export function CheckoutForm() {
     }
     const url = whatsappLink(message);
     window.open(url, "_blank", "noopener,noreferrer");
+    setDone({ nombre: data.nombre, count, total: subtotal, url });
     clear();
-    router.push("/");
   };
 
   return (
@@ -236,7 +290,7 @@ export function CheckoutForm() {
             <span className="text-[0.65rem] uppercase tracking-widest text-[var(--color-ink-mute)] font-semibold">
               Total
             </span>
-            <span className="font-display text-2xl text-[var(--color-sky-deep)]">
+            <span className="font-display text-2xl text-[var(--color-ink)] tracking-tight">
               ${subtotal.toLocaleString("es-AR")}
             </span>
           </div>
@@ -322,12 +376,18 @@ function RadioCard({
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 p-3 rounded-2xl border text-left transition-all ${
+      aria-pressed={checked}
+      className={`relative flex-1 p-3 rounded-2xl border-2 text-left [transition:background-color_.2s,border-color_.2s] ${
         checked
           ? "bg-[var(--color-sky-tint)] border-[var(--color-sky)]"
           : "bg-white border-[var(--color-rule)] hover:border-[var(--color-sky-soft)]"
       }`}
     >
+      {checked && (
+        <span className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-[var(--color-sky)] text-white grid place-items-center text-[0.6rem] font-bold">
+          ✓
+        </span>
+      )}
       <span className="text-2xl block">{icon}</span>
       <span className="block font-semibold text-[var(--color-ink)] mt-1">{title}</span>
       <span className="block text-xs text-[var(--color-ink-mute)]">{sub}</span>
@@ -350,7 +410,8 @@ function PaymentCard({
     <button
       type="button"
       onClick={onClick}
-      className={`p-3 rounded-2xl border text-center transition-all ${
+      aria-pressed={checked}
+      className={`p-3 rounded-2xl border-2 text-center [transition:background-color_.2s,border-color_.2s] ${
         checked
           ? "bg-[var(--color-sky-tint)] border-[var(--color-sky)]"
           : "bg-white border-[var(--color-rule)] hover:border-[var(--color-sky-soft)]"

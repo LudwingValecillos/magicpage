@@ -34,9 +34,9 @@ export function Featured() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <Reveal y={32} className="max-w-2xl">
-            <span className="eyebrow">Destacados</span>
+            <span className="eyebrow eyebrow-pink">Destacados</span>
             <h2 className="display text-[clamp(2rem,5vw,3.5rem)] mt-3">
-              Lo más <span className="gradient-text-sky">nuevo</span>.
+              Lo más <span className="gradient-text-pink">nuevo</span>.
             </h2>
           </Reveal>
           <Reveal y={20}>

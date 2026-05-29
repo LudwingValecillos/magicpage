@@ -48,7 +48,7 @@ export function CartDrawer() {
 
       <aside
         aria-hidden={!isOpen}
-        className={`fixed top-0 right-0 z-[90] h-full w-[min(92vw,26rem)] bg-[var(--color-bg-soft)] border-l border-[var(--color-rule)] shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out flex flex-col ${
+        className={`fixed top-0 right-0 z-[90] h-full w-[min(92vw,26rem)] bg-[var(--color-bg-soft)] border-l border-[var(--color-rule)] shadow-[-20px_0_60px_-20px_rgba(28,36,52,0.25)] [transition:transform_.45s_var(--ease-drawer)] flex flex-col ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -85,7 +85,7 @@ export function CartDrawer() {
                 return (
                   <li
                     key={product.slug}
-                    className="card p-3 flex items-center gap-3"
+                    className="card p-3 flex items-center gap-3 [animation:fade-img_.35s_var(--ease-out-quart)_both]"
                   >
                     <Link
                       href={`/producto/${product.slug}`}
@@ -132,7 +132,7 @@ export function CartDrawer() {
                             +
                           </button>
                         </div>
-                        <span className="text-sm font-bold text-[var(--color-sky-deep)]">
+                        <span className="text-sm font-bold text-[var(--color-ink)]">
                           ${(product.precio * qty).toLocaleString("es-AR")}
                         </span>
                       </div>
