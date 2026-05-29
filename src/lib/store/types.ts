@@ -20,6 +20,8 @@ export interface Product {
   categoria: CategoriaSlug;
   marca: MarcaSlug;
   imagenes: ProductImage[];
+  /** Talles disponibles, ej. ["2","4","6","8"] o ["S","M","L"]. Vacío si no aplica. */
+  talles: string[];
   descripcion?: string;
   oferta: boolean;
   /** Requerido si oferta=true; mostrado tachado. */

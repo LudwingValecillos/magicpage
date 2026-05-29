@@ -9,8 +9,11 @@ Entry point for any AI agent working in this repo. Read this first.
 **Magic** — visual scaffold for a premium toy/kids ecommerce.
 Categories: juguetes, Marvel, Disney, ropa, coleccionables, gaming, peluches, escolares.
 
-Current state: **design-only, no backend wired** (no Supabase, no Mercado Pago yet).
-All data is mock data in `src/content/site.ts`.
+Current state: **Supabase wired, adapter swap pending**.
+- Schema + RLS + Storage bucket creados en Supabase (ver `SUPABASE_SETUP.md`).
+- `SupabaseAdapter` listo en `src/lib/store/supabaseAdapter.ts`.
+- Adapter activo aún es `LocalStorageAdapter` — flip manual cuando se quiera.
+- Mercado Pago: aún no.
 
 ---
 
@@ -175,7 +178,8 @@ npm run lint
 ## Future work (not yet implemented)
 
 Per user spec but explicitly deferred:
-- Supabase wiring (products, categories, auth, storage)
+- ~~Supabase wiring~~ ✅ done (ver `SUPABASE_SETUP.md`)
+- Activar `SupabaseAdapter` (swap línea final en `src/lib/store/adapter.ts`)
+- Admin CMS panel (página `/admin` con CRUD de productos)
+- Upload de imágenes a Storage
 - Mercado Pago checkout
-- Admin CMS panel
-- Real product images (currently emoji + gradient orbs)

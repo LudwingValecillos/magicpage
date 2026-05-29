@@ -12,7 +12,29 @@ import type { CategoriaSlug, MarcaSlug } from "@/lib/store/types";
 type StatusFilter = "todo" | "activos" | "inactivos" | "oferta";
 
 export default function AdminProductsPage() {
-  const { all, categorias, marcas, toggleActivo, toggleOferta, remove } = useProducts();
+  const { all, categorias, marcas, toggleActivo, update, remove } = useProducts();
+
+  const handleToggleOferta = async (slug: string) => {
+    const p = all.find((x) => x.slug === slug);
+    if (!p) return;
+    if (p.oferta) {
+      // Desactivar oferta: limpia precioAnterior también para satisfacer el constraint
+      await update(slug, { oferta: false, precioAnterior: undefined });
+      return;
+    }
+    // Activar oferta: pedir precio anterior
+    const raw = window.prompt(
+      `Precio anterior de "${p.nombre}" (tachado en la web). Debe ser MAYOR al precio actual de $${p.precio.toLocaleString("es-AR")}:`,
+      p.precioAnterior ? String(p.precioAnterior) : String(Math.round(p.precio * 1.3)),
+    );
+    if (raw == null) return; // canceló
+    const precioAnterior = Number(raw.replace(/[^\d.]/g, ""));
+    if (!Number.isFinite(precioAnterior) || precioAnterior <= p.precio) {
+      window.alert(`El precio anterior debe ser un número mayor a $${p.precio.toLocaleString("es-AR")}.`);
+      return;
+    }
+    await update(slug, { oferta: true, precioAnterior });
+  };
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<CategoriaSlug | "todo">("todo");
   const [marca, setMarca] = useState<MarcaSlug | "todo">("todo");
@@ -188,7 +210,7 @@ export default function AdminProductsPage() {
                       <td className="px-4 py-3 text-center hidden sm:table-cell">
                         <Toggle
                           on={p.oferta}
-                          onChange={() => toggleOferta(p.slug)}
+                          onChange={() => handleToggleOferta(p.slug)}
                           colorOn="var(--color-coral)"
                         />
                       </td>

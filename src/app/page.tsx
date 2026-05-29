@@ -1,5 +1,6 @@
 import { Nav } from "@/components/sections/Nav";
 import { Hero } from "@/components/sections/Hero";
+import { Brands } from "@/components/sections/Brands";
 import { Categories } from "@/components/sections/Categories";
 import { Featured } from "@/components/sections/Featured";
 import { Ofertas } from "@/components/sections/Ofertas";
@@ -13,6 +14,7 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
+        <Brands />
         <Categories />
         <Featured />
         <Ofertas />

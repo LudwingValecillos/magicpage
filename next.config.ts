@@ -5,6 +5,12 @@ const config: NextConfig = {
   experimental: {
     optimizePackageImports: ["animejs"],
   },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "magicstore.com.ar", pathname: "/wp-content/uploads/**" },
+      { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
+    ],
+  },
 };
 
 export default config;

@@ -23,6 +23,7 @@ function emptyDraft(): Product {
     categoria: "ropa",
     marca: "otra",
     imagenes: [],
+    talles: [],
     descripcion: "",
     oferta: false,
     precioAnterior: undefined,
@@ -319,6 +320,38 @@ export function ProductForm({ initial }: ProductFormProps) {
                 placeholder="Se muestra tachado"
               />
             </Field>
+          </Card>
+
+          <Card title="Talles">
+            <Field label="Separados por guión o coma (ej. 2-4-6-8 o S,M,L)">
+              <input
+                type="text"
+                value={draft.talles.join("-")}
+                onChange={(e) =>
+                  setField(
+                    "talles",
+                    e.target.value
+                      .split(/[-,\s]+/)
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                  )
+                }
+                className="adm-input font-mono"
+                placeholder="2-4-6-8"
+              />
+            </Field>
+            {draft.talles.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {draft.talles.map((t, i) => (
+                  <span
+                    key={i}
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--color-sky-tint)] text-[var(--color-sky-deep)]"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
           </Card>
         </div>
       </div>

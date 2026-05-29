@@ -11,12 +11,16 @@ import { useSearchParams } from "next/navigation";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { useProducts } from "@/lib/store/useProducts";
+import { useStore } from "@/lib/store/StoreProvider";
 import type { CategoriaSlug, MarcaSlug, Product } from "@/lib/store/types";
 
 type Sort = "nuevos" | "precio-asc" | "precio-desc";
 
+const PAGE_SIZE = 48;
+
 export function CatalogView() {
   const params = useSearchParams();
+  const { ready } = useStore();
   const { visibles, categorias, marcas } = useProducts();
 
   const [cat, setCat] = useState<CategoriaSlug | "todo">("todo");
@@ -24,6 +28,7 @@ export function CatalogView() {
   const [oferta, setOferta] = useState(false);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>("nuevos");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const c = params?.get("cat");
@@ -61,6 +66,14 @@ export function CatalogView() {
     }
     return list;
   }, [visibles, cat, marca, oferta, query, sort]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [cat, marca, oferta, query, sort]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <section
@@ -136,29 +149,124 @@ export function CatalogView() {
 
         {/* count */}
         <div className="mt-6 mb-4 text-sm text-[var(--color-ink-mute)]">
-          {filtered.length} {filtered.length === 1 ? "producto" : "productos"}
+          {!ready
+            ? "Cargando productos..."
+            : `${filtered.length} ${filtered.length === 1 ? "producto" : "productos"}`}
         </div>
 
         {/* grid */}
-        {filtered.length === 0 ? (
-          <Reveal y={24}>
-            <div className="card p-10 sm:p-16 text-center">
-              <span className="text-5xl sm:text-6xl">🔍</span>
-              <p className="mt-4 text-[var(--color-ink-soft)]">
-                Sin resultados. Probá con otra categoría o sacá los filtros.
-              </p>
-            </div>
-          </Reveal>
-        ) : (
-          <Reveal stagger={60} y={32} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
-            {filtered.map((p) => (
-              <ProductCard key={p.slug} product={p} />
+        {!ready ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="aspect-square card bg-[var(--color-bg-tint)] animate-pulse" />
             ))}
-          </Reveal>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="card p-10 sm:p-16 text-center">
+            <span className="text-5xl sm:text-6xl">🔍</span>
+            <p className="mt-4 text-[var(--color-ink-soft)]">
+              Sin resultados. Probá con otra categoría o sacá los filtros.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+              {pageItems.map((p) => (
+                <ProductCard key={p.slug} product={p} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onChange={(p) => {
+                  setPage(p);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
+            )}
+          </>
         )}
       </div>
     </section>
   );
+}
+
+function Pagination({
+  page,
+  totalPages,
+  onChange,
+}: {
+  page: number;
+  totalPages: number;
+  onChange: (p: number) => void;
+}) {
+  const pages = pageNumbers(page, totalPages);
+  return (
+    <nav
+      className="mt-10 flex items-center justify-center gap-1.5 flex-wrap"
+      aria-label="Paginación"
+    >
+      <PgBtn disabled={page === 1} onClick={() => onChange(page - 1)} label="‹" />
+      {pages.map((p, i) =>
+        p === "…" ? (
+          <span key={`gap-${i}`} className="px-2 text-[var(--color-ink-mute)]">
+            …
+          </span>
+        ) : (
+          <PgBtn
+            key={p}
+            active={p === page}
+            onClick={() => onChange(p)}
+            label={String(p)}
+          />
+        ),
+      )}
+      <PgBtn
+        disabled={page === totalPages}
+        onClick={() => onChange(page + 1)}
+        label="›"
+      />
+    </nav>
+  );
+}
+
+function PgBtn({
+  label,
+  onClick,
+  active = false,
+  disabled = false,
+}: {
+  label: string;
+  onClick: () => void;
+  active?: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      data-active={active || undefined}
+      className="min-w-10 h-10 px-3 rounded-full text-sm font-semibold border border-[var(--color-rule)] bg-white text-[var(--color-ink)] hover:border-[var(--color-sky)] data-[active]:bg-[var(--color-sky)] data-[active]:text-white data-[active]:border-[var(--color-sky)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+    >
+      {label}
+    </button>
+  );
+}
+
+function pageNumbers(current: number, total: number): (number | "…")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const set = new Set<number>([1, total, current, current - 1, current + 1]);
+  if (current <= 3) [2, 3, 4].forEach((n) => set.add(n));
+  if (current >= total - 2) [total - 1, total - 2, total - 3].forEach((n) => set.add(n));
+  const sorted = [...set].filter((n) => n >= 1 && n <= total).sort((a, b) => a - b);
+  const out: (number | "…")[] = [];
+  for (let i = 0; i < sorted.length; i++) {
+    if (i > 0 && sorted[i] - sorted[i - 1] > 1) out.push("…");
+    out.push(sorted[i]);
+  }
+  return out;
 }
 
 function Chip({

@@ -23,6 +23,8 @@ export function ProductDetail({ slug }: { slug: string }) {
   const { add, open: openCart } = useCart();
   const [qty, setQty] = useState(1);
   const [thumb, setThumb] = useState(0);
+  const [talle, setTalle] = useState<string | null>(null);
+  const [talleError, setTalleError] = useState(false);
 
   if (!ready) {
     return (
@@ -62,7 +64,15 @@ export function ProductDetail({ slug }: { slug: string }) {
   const images = product.imagenes ?? [];
   const hasImages = images.length > 0;
 
+  const talles = product.talles ?? [];
+  const requiresTalle = talles.length > 0;
+
   const handleAdd = () => {
+    if (requiresTalle && !talle) {
+      setTalleError(true);
+      return;
+    }
+    setTalleError(false);
     add(product.slug, qty);
     openCart();
   };
@@ -166,6 +176,42 @@ export function ProductDetail({ slug }: { slug: string }) {
                 <p className="mt-5 text-[var(--color-ink-soft)] leading-relaxed">
                   {product.descripcion}
                 </p>
+              )}
+
+              {/* talles */}
+              {requiresTalle && (
+                <div className="mt-7">
+                  <div className="flex items-baseline justify-between mb-2.5">
+                    <span className="text-xs uppercase tracking-widest font-semibold text-[var(--color-ink-mute)]">
+                      Talle
+                    </span>
+                    {talle && (
+                      <span className="text-sm font-semibold text-[var(--color-ink)]">
+                        Talle {talle}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {talles.map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => {
+                          setTalle(t);
+                          setTalleError(false);
+                        }}
+                        data-active={talle === t || undefined}
+                        className="min-w-12 h-11 px-3 rounded-xl border text-sm font-semibold transition-all bg-white border-[var(--color-rule)] text-[var(--color-ink)] hover:border-[var(--color-sky)] data-[active]:bg-[var(--color-sky)] data-[active]:text-white data-[active]:border-[var(--color-sky)] data-[active]:shadow-[var(--shadow-sky)]"
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                  {talleError && (
+                    <p className="mt-2 text-xs text-[var(--color-pink-deep)]">
+                      Elegí un talle antes de continuar.
+                    </p>
+                  )}
+                </div>
               )}
 
               {/* qty + add */}
