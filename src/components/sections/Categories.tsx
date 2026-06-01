@@ -29,17 +29,10 @@ export function Categories() {
           </h2>
         </Reveal>
 
-        <Reveal stagger={100} y={32} className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
-          {(categorias ?? site.categorias).map((c, i) => {
+        <Reveal stagger={100} y={32} className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6 [&>*:first-child]:col-span-2 sm:[&>*:first-child]:col-span-1">
+          {(categorias ?? site.categorias).map((c) => {
             const count = visibles.filter((p) => p.categoria === c.slug).length;
-            return (
-              <CategoryCard
-                key={c.slug}
-                categoria={c}
-                count={count}
-                className={i === 0 ? "col-span-2 sm:col-span-1" : ""}
-              />
-            );
+            return <CategoryCard key={c.slug} categoria={c} count={count} />;
           })}
         </Reveal>
       </div>

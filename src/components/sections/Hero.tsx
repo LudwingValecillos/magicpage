@@ -79,10 +79,10 @@ export function Hero() {
 
         <Reveal y={20}>
           <div className="flex flex-row items-stretch sm:items-center justify-center gap-3 mt-2 w-full sm:w-auto">
-            <MagicButton href={site.hero.primaryCta.href} variant="primary" size="lg" icon={<span aria-hidden>→</span>} className="flex-1 sm:flex-none">
+            <MagicButton href={site.hero.primaryCta.href} variant="primary" size="lg" icon={<span aria-hidden>→</span>} className="flex-1 sm:flex-none whitespace-nowrap px-4 sm:px-7">
               {site.hero.primaryCta.label}
             </MagicButton>
-            <MagicButton href={site.hero.secondaryCta.href} variant="ghost" size="lg" className="flex-1 sm:flex-none">
+            <MagicButton href={site.hero.secondaryCta.href} variant="ghost" size="lg" className="flex-1 sm:flex-none whitespace-nowrap px-4 sm:px-7">
               {site.hero.secondaryCta.label}
             </MagicButton>
           </div>
