@@ -1,6 +1,7 @@
 import { Nav } from "@/components/sections/Nav";
 import { Footer } from "@/components/sections/Footer";
 import { ProductDetail } from "@/components/sections/ProductDetail";
+import { site } from "@/content/site";
 
 /**
  * Product page — fully dynamic so admin-added products work without a rebuild.
@@ -11,7 +12,7 @@ type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
-  return { title: `${slug} — Magic` };
+  return { title: `${slug} — ${site.brand}` };
 }
 
 export default async function ProductPage({ params }: { params: Params }) {

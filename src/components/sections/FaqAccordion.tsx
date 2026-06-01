@@ -17,7 +17,7 @@ export function FaqAccordion() {
       className="relative px-[var(--gutter)] py-[var(--section)]"
       style={{
         ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)",
-        ["--section" as string]: "clamp(3rem, 8vh, 6rem)",
+        ["--section" as string]: "clamp(2rem, 6vh, 6rem)",
       } as React.CSSProperties}
     >
       <div className="max-w-3xl mx-auto">

@@ -18,7 +18,7 @@ export function Categories() {
       className="relative px-[var(--gutter)] py-[var(--section)]"
       style={{
         ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)",
-        ["--section" as string]: "clamp(3rem, 8vh, 6rem)",
+        ["--section" as string]: "clamp(2rem, 6vh, 6rem)",
       } as React.CSSProperties}
     >
       <div className="max-w-6xl mx-auto">
@@ -29,10 +29,17 @@ export function Categories() {
           </h2>
         </Reveal>
 
-        <Reveal stagger={100} y={32} className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-          {(categorias ?? site.categorias).map((c) => {
+        <Reveal stagger={100} y={32} className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
+          {(categorias ?? site.categorias).map((c, i) => {
             const count = visibles.filter((p) => p.categoria === c.slug).length;
-            return <CategoryCard key={c.slug} categoria={c} count={count} />;
+            return (
+              <CategoryCard
+                key={c.slug}
+                categoria={c}
+                count={count}
+                className={i === 0 ? "col-span-2 sm:col-span-1" : ""}
+              />
+            );
           })}
         </Reveal>
       </div>

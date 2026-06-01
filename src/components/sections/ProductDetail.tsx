@@ -5,7 +5,7 @@
  * Lee del store por slug. Si todavía hidrata, muestra skeleton.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { Badge } from "@/components/ui/Badge";
@@ -25,6 +25,16 @@ export function ProductDetail({ slug }: { slug: string }) {
   const [thumb, setThumb] = useState(0);
   const [talle, setTalle] = useState<string | null>(null);
   const [talleError, setTalleError] = useState(false);
+
+  // Al entrar a un producto (o cambiar a otro desde "relacionados"),
+  // subir al tope y resetear selección de imagen/talle/cantidad.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+    setThumb(0);
+    setQty(1);
+    setTalle(null);
+    setTalleError(false);
+  }, [slug]);
 
   if (!ready) {
     return (
