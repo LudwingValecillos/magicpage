@@ -11,7 +11,7 @@
 import type { CategoriaInfo, MarcaInfo } from "@/lib/store/types";
 
 export const site = {
-  brand: process.env.NEXT_PUBLIC_BRAND_NAME ?? "Magic",
+  brand: process.env.NEXT_PUBLIC_BRAND_NAME ?? "Título",
   tagline: "Productos oficiales Disney y Marvel — ropa, juguetes y accesorios",
 
   nav: [
@@ -22,7 +22,7 @@ export const site = {
   ],
 
   hero: {
-    eyebrow: "Tienda Magic · Shopping Devoto",
+    eyebrow: "Tienda Título · Shopping Devoto",
     headline: ["Productos oficiales", "Disney y Marvel."],
     sub: "Ropa, juguetes y accesorios para los más chicos. Curado con cariño.",
     primaryCta: { label: "Ver catálogo", href: "/catalogo" },
@@ -99,7 +99,7 @@ export const site = {
   ],
 
   footer: {
-    legal: `© ${new Date().getFullYear()} · Tienda Magic Shopping Devoto`,
+    legal: `© ${new Date().getFullYear()} · Tienda Título Shopping Devoto`,
   },
 } as const;
 

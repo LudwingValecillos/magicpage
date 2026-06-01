@@ -39,7 +39,7 @@ const icons: Record<string, React.ReactNode> = {
 export function TrustBadges() {
   return (
     <section
-      aria-label="Por qué comprar en Magic"
+      aria-label="Por qué comprar en Título"
       className="relative px-[var(--gutter)] py-[var(--section)]"
       style={{
         ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)",

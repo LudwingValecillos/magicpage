@@ -64,7 +64,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <span className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[var(--color-sky)] to-[var(--color-pink)] grid place-items-center text-base text-white shadow-[var(--shadow-soft)]">
               ✦
             </span>
-            <span className="font-display text-lg text-[var(--color-ink)]">Magic</span>
+            <span className="font-display text-lg text-[var(--color-ink)]">Título</span>
           </Link>
           <span className="block mt-2 text-[0.65rem] uppercase tracking-widest text-[var(--color-sky-deep)] font-semibold">
             Panel admin
@@ -108,7 +108,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <span className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[var(--color-sky)] to-[var(--color-pink)] grid place-items-center text-base text-white">
                 ✦
               </span>
-              <span className="font-display text-lg text-[var(--color-ink)]">Magic</span>
+              <span className="font-display text-lg text-[var(--color-ink)]">Título</span>
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
