@@ -2,10 +2,14 @@
 
 /**
  * Brands — carrusel de marcas/personajes que vendemos.
- * Marquee infinito con los logos del sitio (CDN externo).
- * Duplica la lista 2x para que el loop sea seamless.
+ * Marquee infinito continuo con embla-carousel + plugin AutoScroll.
+ * Loop seamless (embla clona slides), pausa al hover, drag libre.
+ * Respeta prefers-reduced-motion: sin auto-scroll, queda como fila arrastrable.
  */
 
+import { useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import AutoScroll from "embla-carousel-auto-scroll";
 import { Reveal } from "@/components/Reveal";
 
 const CDN = "https://magicstore.com.ar/wp-content/uploads/2025/06";
@@ -36,9 +40,29 @@ const brands: Brand[] = [
   { nombre: "Sonic",         src: `${CDN}/logo-sonic-01-150x150.webp` },
 ];
 
-const loop = [...brands, ...brands];
-
 export function Brands() {
+  const [reduce, setReduce] = useState(false);
+
+  useEffect(() => {
+    setReduce(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }, []);
+
+  const [emblaRef] = useEmblaCarousel(
+    // Marquee puro: loop, sin drag (el drag libre genera momentum que "rebota").
+    { loop: true, align: "start", containScroll: false, watchDrag: false },
+    reduce
+      ? []
+      : [
+          AutoScroll({
+            speed: 1.1,
+            startDelay: 0,
+            playOnInit: true,
+            stopOnInteraction: false,
+            stopOnMouseEnter: true,
+          }),
+        ],
+  );
+
   return (
     <section
       id="marcas"
@@ -58,48 +82,45 @@ export function Brands() {
       </div>
 
       <div
-        className="brands-marquee group relative -mx-[var(--gutter)] overflow-hidden"
+        className="-mx-[var(--gutter)] overflow-hidden"
         style={{
           maskImage: "linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)",
           WebkitMaskImage: "linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)",
         }}
       >
-        <div className="brands-track flex w-max gap-10 sm:gap-12 px-[var(--gutter)] py-4">
-          {loop.map((b, i) => (
-            <div
-              key={`${b.nombre}-${i}`}
-              className="shrink-0 w-20 sm:w-24 aspect-square grid place-items-center rounded-full bg-white border border-[var(--color-rule)] shadow-[var(--shadow-soft)] transition-transform duration-300 ease-[var(--ease-out-quart)] hover:scale-110 hover:-rotate-3"
-              title={b.nombre}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={b.src}
-                alt={b.nombre}
-                loading="lazy"
-                width={64}
-                height={64}
-                className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
-              />
-            </div>
-          ))}
+        <div className="overflow-hidden px-[var(--gutter)]" ref={emblaRef}>
+          {/* Patrón de spacing oficial de embla: el track tiene margin-left
+              negativo y cada slide aporta su propio padding-left. Así el
+              espaciado se mantiene parejo incluso al loopear (sin gap de flex). */}
+          <div
+            className="flex py-4"
+            style={{ ["--space" as string]: "2.75rem", marginLeft: "calc(var(--space) * -1)" }}
+          >
+            {brands.map((b) => (
+              <div
+                key={b.nombre}
+                className="shrink-0 grow-0 min-w-0 flex justify-center"
+                style={{ paddingLeft: "var(--space)" }}
+              >
+                <div
+                  className="group/brand w-20 sm:w-24 aspect-square grid place-items-center rounded-full bg-white border border-[var(--color-rule)] shadow-[var(--shadow-soft)] transition-transform duration-300 ease-[var(--ease-out-quart)] hover:scale-105"
+                  title={b.nombre}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={b.src}
+                    alt={b.nombre}
+                    loading="lazy"
+                    width={64}
+                    height={64}
+                    className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .brands-track {
-          animation: brands-scroll 60s linear infinite;
-        }
-        .brands-marquee:hover .brands-track {
-          animation-play-state: paused;
-        }
-        @keyframes brands-scroll {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .brands-track { animation: none; }
-        }
-      `}</style>
     </section>
   );
 }

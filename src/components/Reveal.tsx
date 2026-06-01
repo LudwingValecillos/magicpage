@@ -1,50 +1,98 @@
 "use client";
 
 /**
- * <Reveal> — declarative scroll-triggered fade + slide.
+ * <Reveal> — scroll-triggered fade + slide, ahora sobre framer-motion.
  *
- * Wraps children in a div, then before paint sets initial state
- * (opacity 0, translateY) and starts an IntersectionObserver. When the
- * element enters the viewport, anime.js tweens it to its final state.
+ * Mantiene la MISMA API que la versión anime.js anterior (props y/stagger/
+ * duration/delay/threshold/rootMargin/repeat) para no tocar los call-sites.
  *
- * Uses useLayoutEffect (SSR-safe) so no flash between SSR render and
- * first animation frame.
+ * - Sin stagger: anima el contenedor entero al entrar al viewport.
+ * - Con stagger: envuelve cada hijo directo en un motion.div y los escalona.
+ *   (El wrapper pasa a ser el ítem de grid; el layout se preserva.)
+ * - Respeta prefers-reduced-motion: si está activo, no anima (render directo).
  *
  * EXAMPLES
- *   <Reveal>                              fade in self
- *     <h2>Section title</h2>
- *   </Reveal>
- *
- *   <Reveal stagger={80} y={48}>          stagger children
- *     <Card />
- *     <Card />
- *   </Reveal>
+ *   <Reveal><h2>Título</h2></Reveal>
+ *   <Reveal stagger={80} y={40} className="grid grid-cols-3"> ...cards... </Reveal>
  */
 
-import { useEffect, useLayoutEffect, useRef } from "react";
-import { revealOnScroll, type RevealOptions } from "@/lib/anime/scroll";
-
-const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+import { Children, isValidElement } from "react";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
+import type { RevealOptions } from "@/lib/anime/scroll";
 
 interface RevealProps extends RevealOptions {
   children: React.ReactNode;
   className?: string;
 }
 
-export function Reveal({ children, className, ...opts }: RevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
+// ease-out-quart (mismo cubic-bezier que --ease-out-quart en globals.css)
+const EASE: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
-  useIsoLayoutEffect(() => {
-    const anim = revealOnScroll(ref.current, opts);
-    return () => {
-      anim?.revert();
+export function Reveal({
+  children,
+  className,
+  y = 32,
+  stagger = 0,
+  duration = 500,
+  delay = 0,
+  threshold = 0.12,
+  rootMargin = -40,
+  repeat = false,
+}: RevealProps) {
+  const reduce = useReducedMotion();
+
+  // Reduced motion → sin animación, contenido visible de una.
+  if (reduce) {
+    return <div className={className}>{children}</div>;
+  }
+
+  const dur = duration / 1000;
+  const del = delay / 1000;
+  const viewport = {
+    once: !repeat,
+    amount: threshold,
+    margin: `0px 0px ${rootMargin}px 0px`,
+  } as const;
+
+  if (stagger > 0) {
+    const container: Variants = {
+      hidden: {},
+      show: { transition: { staggerChildren: stagger / 1000, delayChildren: del } },
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const item: Variants = {
+      hidden: { opacity: 0, y },
+      show: { opacity: 1, y: 0, transition: { duration: dur, ease: EASE } },
+    };
+    return (
+      <motion.div
+        className={className}
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={viewport}
+      >
+        {Children.map(children, (child, i) =>
+          isValidElement(child) ? (
+            <motion.div key={child.key ?? i} variants={item}>
+              {child}
+            </motion.div>
+          ) : (
+            child
+          ),
+        )}
+      </motion.div>
+    );
+  }
 
   return (
-    <div ref={ref} className={className}>
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={viewport}
+      transition={{ duration: dur, delay: del, ease: EASE }}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }

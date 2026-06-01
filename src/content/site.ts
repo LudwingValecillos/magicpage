@@ -43,6 +43,27 @@ export const site = {
     { slug: "otra", nombre: "Otros" },
   ] satisfies MarcaInfo[],
 
+  /** Tira de confianza debajo del hero. `icon` mapea a un SVG en TrustBadges.tsx. */
+  confianza: [
+    { icon: "truck", label: "Envío a domicilio" },
+    { icon: "store", label: "Retiro gratis en el local" },
+    { icon: "shield", label: "Productos 100% oficiales" },
+    { icon: "refresh", label: "Cambios sin cargo" },
+  ],
+
+  /**
+   * Medios de pago mostrados en la tira de pagos.
+   * TODO: confirmar con el cliente la lista final — el FAQ hoy solo menciona
+   * efectivo y transferencia; Mercado Pago/tarjetas están en el roadmap.
+   */
+  pagos: [
+    { id: "mercadopago", label: "Mercado Pago" },
+    { id: "visa", label: "Visa" },
+    { id: "mastercard", label: "Mastercard" },
+    { id: "transferencia", label: "Transferencia" },
+    { id: "efectivo", label: "Efectivo" },
+  ],
+
   local: {
     direccion: "Quevedo 3365, C1417 CABA — Shopping Devoto",
     horarios: "Lun a Sáb 10:00 – 22:00 · Dom 12:00 – 21:00",

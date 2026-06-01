@@ -13,6 +13,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
+import { decode } from "he";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -83,7 +84,9 @@ function pickPrice(precioExcel, precioSitio) {
 
 function truncate(s, max) {
   if (!s) return null;
-  return s.length > max ? s.slice(0, max - 1).trim() + "…" : s;
+  // Decodifica entidades HTML del scrape (&amp; &#038; &#8217; ...) antes de cortar.
+  const clean = decode(String(s));
+  return clean.length > max ? clean.slice(0, max - 1).trim() + "…" : clean;
 }
 
 // ============================================

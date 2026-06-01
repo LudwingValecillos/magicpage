@@ -291,6 +291,23 @@ body.theme-admin {
 .no-scrollbar { scrollbar-width: none; }
 
 /* =====================================================================
+   LENIS — smooth scroll (clases que agrega el lib)
+   ===================================================================== */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* =====================================================================
    REDUCED MOTION
    ===================================================================== */
 @media (prefers-reduced-motion: reduce) {

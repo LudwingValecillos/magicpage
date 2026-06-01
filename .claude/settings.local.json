@@ -14,7 +14,8 @@
       "WebFetch(domain:magicstore.com.ar)",
       "Bash(npx skills *)",
       "Bash(rm -rf .next)",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(git stash *)"
     ]
   }
 }

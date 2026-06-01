@@ -12,13 +12,20 @@ import { useProducts } from "@/lib/store/useProducts";
 
 export function Featured() {
   const { visibles } = useProducts();
-  const items = useMemo(
-    () =>
-      [...visibles]
-        .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0))
-        .slice(0, 6),
-    [visibles],
-  );
+  // El hero promete productos con licencia (Disney/Marvel). Priorizamos esos
+  // por sobre los genéricos (marca "otra"), y dentro de cada grupo, los más nuevos.
+  // TODO: cuando exista un flag real de personaje/licencia en el schema, usar
+  // ese campo en lugar de `marca !== "otra"`.
+  const items = useMemo(() => {
+    const licenciado = (m: string) => (m === "otra" ? 1 : 0);
+    return [...visibles]
+      .sort(
+        (a, b) =>
+          licenciado(a.marca) - licenciado(b.marca) ||
+          (b.createdAt ?? 0) - (a.createdAt ?? 0),
+      )
+      .slice(0, 6);
+  }, [visibles]);
 
   if (items.length === 0) return null;
 

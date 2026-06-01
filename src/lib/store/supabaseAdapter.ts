@@ -11,6 +11,7 @@
 
 import { supabase } from "@/lib/supabase/client";
 import { LocalStorageAdapter } from "./localStorageAdapter";
+import { decodeEntities } from "@/lib/text";
 import type { Product, ProductImage } from "./types";
 
 interface ProductRow {
@@ -32,13 +33,13 @@ interface ProductRow {
 function rowToProduct(r: ProductRow): Product {
   return {
     slug: r.slug,
-    nombre: r.nombre,
+    nombre: decodeEntities(r.nombre),
     precio: Number(r.precio),
     categoria: r.categoria,
     marca: r.marca,
     imagenes: r.imagenes,
     talles: r.talles ?? [],
-    descripcion: r.descripcion ?? undefined,
+    descripcion: r.descripcion ? decodeEntities(r.descripcion) : undefined,
     oferta: r.oferta,
     precioAnterior: r.precio_anterior == null ? undefined : Number(r.precio_anterior),
     activo: r.activo,

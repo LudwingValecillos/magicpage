@@ -39,7 +39,9 @@ export function Nav() {
 
   return (
     <header
-      className={`fixed top-3 md:top-4 left-1/2 -translate-x-1/2 z-[var(--z-sticky)] w-[min(94vw,72rem)] rounded-full [transition:background-color_.3s_var(--ease-out-quart),box-shadow_.3s_var(--ease-out-quart),border-color_.3s_var(--ease-out-quart)] border ${
+      className={`fixed top-3 md:top-4 left-1/2 -translate-x-1/2 z-[var(--z-sticky)] w-[min(94vw,72rem)] overflow-hidden [transition:background-color_.3s_var(--ease-out-quart),box-shadow_.3s_var(--ease-out-quart),border-color_.3s_var(--ease-out-quart),border-radius_.3s_var(--ease-out-quart)] border ${
+        open ? "rounded-[1.75rem]" : "rounded-full"
+      } ${
         scrolled || open
           ? "bg-white/95 backdrop-blur-md border-[var(--color-rule)] shadow-[var(--shadow-card)]"
           : "bg-white/80 backdrop-blur border-[var(--color-rule)]/60"
