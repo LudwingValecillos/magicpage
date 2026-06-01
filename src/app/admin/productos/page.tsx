@@ -124,18 +124,91 @@ export default function AdminProductsPage() {
         </select>
       </div>
 
-      {/* table */}
-      <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      {/* ===== MOBILE: cards apiladas, sin scroll lateral ===== */}
+      <div className="md:hidden flex flex-col gap-3">
+        {list.length === 0 ? (
+          <div className="card px-4 py-12 text-center text-[var(--color-ink-mute)]">
+            Sin productos. Creá el primero con el botón &ldquo;+ Nuevo producto&rdquo;.
+          </div>
+        ) : (
+          list.map((p) => {
+            const cover = p.imagenes[0]?.url;
+            const catInfo = categorias.find((c) => c.slug === p.categoria);
+            return (
+              <div key={p.slug} className="card p-3 flex flex-col gap-3">
+                <div className="flex items-start gap-3">
+                  <span className="shrink-0 w-14 h-14 rounded-xl bg-[var(--color-bg-tint)] grid place-items-center overflow-hidden">
+                    {cover ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={cover} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xl">{catInfo?.emoji ?? "✦"}</span>
+                    )}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div
+                      className={`font-semibold leading-tight ${!p.activo ? "text-[var(--color-ink-mute)]" : "text-[var(--color-ink)]"}`}
+                    >
+                      {p.nombre}
+                    </div>
+                    <div className="text-[0.65rem] text-[var(--color-ink-mute)] mt-0.5">
+                      {catInfo?.nombre ?? p.categoria} · <span className="capitalize">{p.marca}</span>
+                    </div>
+                    <div className="mt-1">
+                      <span className="font-bold text-[var(--color-sky-deep)]">
+                        ${p.precio.toLocaleString("es-AR")}
+                      </span>
+                      {p.oferta && p.precioAnterior && (
+                        <span className="ml-2 text-[0.7rem] text-[var(--color-ink-mute)] line-through">
+                          ${p.precioAnterior.toLocaleString("es-AR")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 pt-2 border-t border-[var(--color-rule)]">
+                  <label className="flex items-center gap-1.5 text-xs text-[var(--color-ink-soft)]">
+                    <Toggle on={p.activo} onChange={() => toggleActivo(p.slug)} colorOn="var(--color-sky)" />
+                    Activo
+                  </label>
+                  <label className="flex items-center gap-1.5 text-xs text-[var(--color-ink-soft)]">
+                    <Toggle on={p.oferta} onChange={() => handleToggleOferta(p.slug)} colorOn="var(--color-coral)" />
+                    Oferta
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/admin/productos/${p.slug}`}
+                    className="flex-1 text-center px-3 py-2 rounded-full text-xs font-semibold bg-[var(--color-sky-tint)] text-[var(--color-sky-deep)] hover:bg-[var(--color-sky-soft)]/30 transition-colors"
+                  >
+                    Editar
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(p.slug, p.nombre)}
+                    className="flex-1 px-3 py-2 rounded-full text-xs font-semibold text-[var(--color-pink-deep)] bg-[var(--color-pink-tint)] hover:bg-[var(--color-pink-soft)]/40 transition-colors"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* ===== DESKTOP: tabla ===== */}
+      <div className="card overflow-hidden hidden md:block">
+        <table className="w-full text-sm">
             <thead className="border-b border-[var(--color-rule)] text-[0.65rem] uppercase tracking-widest text-[var(--color-ink-mute)] font-semibold bg-[var(--color-bg-tint)]">
               <tr>
                 <th className="text-left px-4 py-3">Producto</th>
-                <th className="text-left px-4 py-3 hidden md:table-cell">Categoría</th>
-                <th className="text-left px-4 py-3 hidden md:table-cell">Marca</th>
+                <th className="text-left px-4 py-3">Categoría</th>
+                <th className="text-left px-4 py-3">Marca</th>
                 <th className="text-right px-4 py-3">Precio</th>
-                <th className="text-center px-4 py-3 hidden sm:table-cell">Activo</th>
-                <th className="text-center px-4 py-3 hidden sm:table-cell">Oferta</th>
+                <th className="text-center px-4 py-3">Activo</th>
+                <th className="text-center px-4 py-3">Oferta</th>
                 <th className="text-right px-4 py-3">Acciones</th>
               </tr>
             </thead>
@@ -184,10 +257,10 @@ export default function AdminProductsPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 hidden md:table-cell text-[var(--color-ink-soft)]">
+                      <td className="px-4 py-3 text-[var(--color-ink-soft)]">
                         {catInfo?.nombre ?? p.categoria}
                       </td>
-                      <td className="px-4 py-3 hidden md:table-cell text-[var(--color-ink-soft)] capitalize">
+                      <td className="px-4 py-3 text-[var(--color-ink-soft)] capitalize">
                         {p.marca}
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -200,14 +273,14 @@ export default function AdminProductsPage() {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center hidden sm:table-cell">
+                      <td className="px-4 py-3 text-center">
                         <Toggle
                           on={p.activo}
                           onChange={() => toggleActivo(p.slug)}
                           colorOn="var(--color-sky)"
                         />
                       </td>
-                      <td className="px-4 py-3 text-center hidden sm:table-cell">
+                      <td className="px-4 py-3 text-center">
                         <Toggle
                           on={p.oferta}
                           onChange={() => handleToggleOferta(p.slug)}
@@ -236,7 +309,6 @@ export default function AdminProductsPage() {
               )}
             </tbody>
           </table>
-        </div>
       </div>
     </div>
   );

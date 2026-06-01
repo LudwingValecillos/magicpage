@@ -51,6 +51,34 @@ export function ProductForm({ initial }: ProductFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [imgInput, setImgInput] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  const uploadFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setError(null);
+    setUploading(true);
+    try {
+      const uploaded: { url: string; storagePath: string }[] = [];
+      for (const file of Array.from(files)) {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("slug", draft.slug || draft.nombre || "producto");
+        const res = await fetch("/api/admin/upload", {
+          method: "POST",
+          credentials: "include",
+          body: fd,
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(body.error ?? `Subida falló (${res.status})`);
+        uploaded.push({ url: body.url, storagePath: body.storagePath });
+      }
+      setField("imagenes", [...draft.imagenes, ...uploaded]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al subir la imagen.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     if (isEdit) return;
@@ -176,9 +204,41 @@ export function ProductForm({ initial }: ProductFormProps) {
 
           <Card title="Imágenes">
             <p className="text-xs text-[var(--color-ink-mute)]">
-              Pegá URLs. La primera es la portada en el catálogo. Sin imágenes se muestra
-              el emoji de la categoría.
+              Subí imágenes desde tu dispositivo (se guardan en el servidor) o pegá una
+              URL. La primera es la portada en el catálogo. Sin imágenes se muestra el
+              emoji de la categoría.
             </p>
+
+            <label
+              className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-[var(--color-rule-strong)] px-4 py-6 text-center cursor-pointer transition-colors hover:border-[var(--color-sky)] hover:bg-[var(--color-sky-tint)] ${
+                uploading ? "opacity-60 pointer-events-none" : ""
+              }`}
+            >
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={uploading}
+                onChange={(e) => {
+                  uploadFiles(e.target.files);
+                  e.target.value = "";
+                }}
+                className="hidden"
+              />
+              <span className="text-2xl">{uploading ? "⏳" : "📷"}</span>
+              <span className="text-sm font-semibold text-[var(--color-ink)]">
+                {uploading ? "Subiendo..." : "Subir imagen"}
+              </span>
+              <span className="text-[0.7rem] text-[var(--color-ink-mute)]">
+                JPG, PNG, WEBP — máx. 5 MB
+              </span>
+            </label>
+
+            <div className="flex items-center gap-2 text-[0.7rem] text-[var(--color-ink-mute)] uppercase tracking-widest">
+              <span className="flex-1 h-px bg-[var(--color-rule)]" />o pegá una URL
+              <span className="flex-1 h-px bg-[var(--color-rule)]" />
+            </div>
+
             <div className="flex gap-2">
               <input
                 type="url"
