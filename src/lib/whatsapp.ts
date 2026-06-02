@@ -48,7 +48,9 @@ export function checkoutMessage(
   lines.push(`Nombre: ${data.nombre}`);
   lines.push(`Teléfono: ${data.telefono}`);
   lines.push("");
-  lines.push(`📦 *Forma de entrega:* ${data.entrega === "retiro" ? "Retiro en local" : "Envío a domicilio"}`);
+  // "retiro" ya no significa retiro en local físico (pedido del cliente):
+  // ahora es "a coordinar por WhatsApp". Reactivar "Retiro en local" si abren sucursal.
+  lines.push(`📦 *Forma de entrega:* ${data.entrega === "retiro" ? "A coordinar por WhatsApp" : "Envío a domicilio"}`);
   if (data.entrega === "envio") {
     lines.push(`📍 Dirección: ${data.direccion ?? ""}`);
     if (data.ciudad) lines.push(`Ciudad: ${data.ciudad}`);

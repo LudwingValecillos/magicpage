@@ -18,11 +18,16 @@ export const site = {
     { label: "Inicio", href: "/" },
     { label: "Catálogo", href: "/catalogo" },
     { label: "Ofertas", href: "/catalogo?oferta=1" },
-    { label: "Local", href: "/#local" },
+    // --- UBICACIÓN FÍSICA OCULTA (pedido del cliente) ---------------------
+    // Se removió el link al local para no exponer una ubicación física.
+    // Reactivar cuando definan una sucursal pública:
+    // { label: "Local", href: "/#local" },
+    // ----------------------------------------------------------------------
   ],
 
   hero: {
-    eyebrow: "Tienda Título · Shopping Devoto",
+    // Antes: "Tienda Título · Shopping Devoto" — se quitó la mención al lugar físico.
+    eyebrow: "Tienda Título",
     headline: ["Productos oficiales", "Disney y Marvel."],
     sub: "Ropa, juguetes y accesorios para los más chicos. Curado con cariño.",
     primaryCta: { label: "Ver catálogo", href: "/catalogo" },
@@ -46,7 +51,13 @@ export const site = {
   /** Tira de confianza debajo del hero. `icon` mapea a un SVG en TrustBadges.tsx. */
   confianza: [
     { icon: "truck", label: "Envío a domicilio" },
-    { icon: "store", label: "Retiro gratis en el local" },
+    // --- RETIRO EN LOCAL OCULTO (pedido del cliente) ----------------------
+    // Se reemplazó "Retiro gratis en el local" por coordinación vía WhatsApp,
+    // para no exponer una ubicación física. Reactivar el badge original
+    // cuando haya una sucursal pública:
+    // { icon: "store", label: "Retiro gratis en el local" },
+    { icon: "store", label: "Entrega a coordinar por WhatsApp" },
+    // ----------------------------------------------------------------------
     { icon: "shield", label: "Productos 100% oficiales" },
     { icon: "refresh", label: "Cambios sin cargo" },
   ],
@@ -65,20 +76,28 @@ export const site = {
   ],
 
   local: {
-    direccion: "Quevedo 3365, C1417 CABA — Shopping Devoto",
+    // --- DIRECCIÓN Y MAPA OCULTOS (pedido del cliente) --------------------
+    // No se expone la ubicación física para no asociarla con la marca.
+    // Los datos quedan acá comentados para reactivarlos a futuro si abren
+    // una sucursal pública. La dirección y el mapa NO se renderizan hoy
+    // (ver Footer.tsx y MapEmbed.tsx).
+    //
+    // direccion: "Quevedo 3365, C1417 CABA — Shopping Devoto",
+    // mapsEmbedSrc:
+    //   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3283.703005379882!2d-58.51998072339833!3d-34.61167085791968!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb7006daa6a61%3A0x8fa434faca93bc2d!2sMagic%20Store%20Devoto%20Shopping!5e0!3m2!1ses!2sar!4v1778604170714!5m2!1ses!2sar",
+    // ----------------------------------------------------------------------
     horarios: "Lun a Sáb 10:00 – 22:00 · Dom 12:00 – 21:00",
     instagram: "https://instagram.com/magic.devoto",
     facebook: "",
     tiktok: "",
-    /** Solo la URL dentro de src="..." del iframe de Google Maps. */
-    mapsEmbedSrc:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3283.703005379882!2d-58.51998072339833!3d-34.61167085791968!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb7006daa6a61%3A0x8fa434faca93bc2d!2sMagic%20Store%20Devoto%20Shopping!5e0!3m2!1ses!2sar!4v1778604170714!5m2!1ses!2sar",
   },
 
   faq: [
     {
       q: "¿Hacen envíos?",
-      a: "Sí, coordinamos envío a domicilio por mensajería. También podés retirar gratis en el local del Shopping Devoto.",
+      // Antes mencionaba "retirar gratis en el local del Shopping Devoto".
+      // Se quitó la referencia al local físico (pedido del cliente).
+      a: "Sí, coordinamos envío a domicilio por mensajería. Cualquier otra modalidad de entrega la coordinamos por WhatsApp.",
     },
     {
       q: "¿Qué formas de pago aceptan?",
@@ -99,7 +118,8 @@ export const site = {
   ],
 
   footer: {
-    legal: `© ${new Date().getFullYear()} · Tienda Título Shopping Devoto`,
+    // Antes: "... · Tienda Título Shopping Devoto" — se quitó la mención al lugar.
+    legal: `© ${new Date().getFullYear()} · Tienda Título`,
   },
 } as const;
 

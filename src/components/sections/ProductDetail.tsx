@@ -292,7 +292,12 @@ export function ProductDetail({ slug }: { slug: string }) {
 
               {/* perks */}
               <div className="mt-8 grid grid-cols-3 gap-2">
+                {/* --- RETIRO EN LOCAL OCULTO (pedido del cliente) -----------
+                    Se reemplazó por "Coordina por WhatsApp" para no exponer
+                    una ubicación física. Reactivar cuando haya sucursal:
                 <Perk icon="🏬" label="Retiro" value="En el local" />
+                    ------------------------------------------------------------ */}
+                <Perk icon="💬" label="Coordina" value="Por WhatsApp" />
                 <Perk icon="🚚" label="Envío" value="A coordinar" />
                 <Perk icon="✅" label="Original" value="Licenciado" />
               </div>

@@ -173,12 +173,25 @@ export function CheckoutForm() {
 
           <Section title="Entrega">
             <div className="flex gap-2">
+              {/* --- RETIRO EN LOCAL OCULTO (pedido del cliente) -------------
+                  Se reemplazó "Retiro en local · Shopping Devoto" por
+                  "Coordinar por WhatsApp": no se expone ubicación física, el
+                  retiro (si aplica) lo maneja el vendedor por chat. El valor
+                  interno sigue siendo "retiro". Reactivar cuando haya sucursal:
               <RadioCard
                 checked={data.entrega === "retiro"}
                 onClick={() => setField("entrega", "retiro")}
                 icon="🏬"
                 title="Retiro en local"
                 sub="Shopping Devoto"
+              />
+                  -------------------------------------------------------------- */}
+              <RadioCard
+                checked={data.entrega === "retiro"}
+                onClick={() => setField("entrega", "retiro")}
+                icon="💬"
+                title="Coordinar por WhatsApp"
+                sub="Lo arreglamos por chat"
               />
               <RadioCard
                 checked={data.entrega === "envio"}

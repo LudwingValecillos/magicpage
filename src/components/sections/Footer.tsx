@@ -6,7 +6,8 @@
 
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
-import { MapEmbed } from "./MapEmbed";
+// MapEmbed oculto por pedido del cliente (ubicación física). Reactivar a futuro:
+// import { MapEmbed } from "./MapEmbed";
 import { site } from "@/content/site";
 import { genericInquiry, whatsappLink, WHATSAPP_NUMBER } from "@/lib/whatsapp";
 
@@ -36,10 +37,14 @@ export function Footer() {
           </p>
 
           <div className="mt-6 flex flex-col gap-2 text-sm text-[var(--color-ink-soft)]">
+            {/* --- DIRECCIÓN OCULTA (pedido del cliente) ----------------------
+                No se muestra la ubicación física para no exponer la marca.
+                Reactivar junto con site.local.direccion cuando haya sucursal:
             <div className="flex items-start gap-2">
               <span aria-hidden>📍</span>
               <span>{site.local.direccion}</span>
             </div>
+                ---------------------------------------------------------------- */}
             <div className="flex items-start gap-2">
               <span aria-hidden>🕒</span>
               <span>{site.local.horarios}</span>
@@ -75,7 +80,32 @@ export function Footer() {
         </Reveal>
 
         <Reveal y={24} delay={120}>
+          {/* --- MAPA / UBICACIÓN OCULTOS (pedido del cliente) ---------------
+              Se quitó el Google Maps embebido para no exponer la ubicación
+              física. Reactivar junto con site.local.mapsEmbedSrc cuando haya
+              una sucursal pública:
           <MapEmbed />
+              ---------------------------------------------------------------- */}
+          <div className="card p-6 flex flex-col items-start gap-3 h-full justify-center">
+            <span className="text-3xl" aria-hidden>💬</span>
+            <h3 className="font-display text-xl text-[var(--color-ink)]">
+              Te atendemos por WhatsApp
+            </h3>
+            <p className="text-sm text-[var(--color-ink-soft)] leading-relaxed">
+              Coordinamos pago y entrega directamente por chat. Escribinos y te
+              respondemos a la brevedad.
+            </p>
+            {WHATSAPP_NUMBER && (
+              <a
+                href={whatsappLink(genericInquiry())}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-semibold text-white bg-[#25D366] shadow-[0_10px_24px_-10px_rgba(37,211,102,0.55)] hover:bg-[#1ebe57] transition-colors"
+              >
+                📱 Escribinos
+              </a>
+            )}
+          </div>
         </Reveal>
       </div>
 

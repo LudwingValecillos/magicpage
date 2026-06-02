@@ -91,7 +91,9 @@ export function Hero() {
         <Reveal y={16}>
           <div className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-[var(--color-ink-soft)]">
             <Trait icon="✨" text="Productos oficiales" />
-            <Trait icon="📍" text="Shopping Devoto" />
+            {/* Antes: <Trait icon="📍" text="Shopping Devoto" /> — se quitó la
+                ubicación física (pedido del cliente). */}
+            <Trait icon="🚚" text="Envío a coordinar" />
             <Trait icon="💬" text="Atención por WhatsApp" />
           </div>
         </Reveal>
