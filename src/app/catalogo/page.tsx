@@ -2,9 +2,10 @@ import { Suspense } from "react";
 import { Nav } from "@/components/sections/Nav";
 import { Footer } from "@/components/sections/Footer";
 import { CatalogView } from "@/components/sections/CatalogView";
+import { site } from "@/content/site";
 
 export const metadata = {
-  title: "Catálogo — Magic",
+  title: `Catálogo — ${site.brand}`,
   description: "Productos oficiales Disney y Marvel: ropa, juguetes y accesorios.",
 };
 

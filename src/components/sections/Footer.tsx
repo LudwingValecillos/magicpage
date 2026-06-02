@@ -12,11 +12,14 @@ import { site } from "@/content/site";
 import { genericInquiry, whatsappLink, WHATSAPP_NUMBER } from "@/lib/whatsapp";
 
 export function Footer() {
-  const socials = [
-    site.local.instagram && { label: "Instagram", href: site.local.instagram, icon: "ig" },
-    site.local.facebook && { label: "Facebook", href: site.local.facebook, icon: "fb" },
-    site.local.tiktok && { label: "TikTok", href: site.local.tiktok, icon: "tt" },
-  ].filter(Boolean) as Array<{ label: string; href: string; icon: string }>;
+  type Social = { label: string; href: string; icon: string };
+  const socials = (
+    [
+      site.local.instagram && { label: "Instagram", href: site.local.instagram, icon: "ig" },
+      site.local.facebook && { label: "Facebook", href: site.local.facebook, icon: "fb" },
+      site.local.tiktok && { label: "TikTok", href: site.local.tiktok, icon: "tt" },
+    ] as Array<Social | "" | false>
+  ).filter((s): s is Social => Boolean(s));
 
   return (
     <footer

@@ -87,7 +87,9 @@ export const site = {
     //   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3283.703005379882!2d-58.51998072339833!3d-34.61167085791968!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb7006daa6a61%3A0x8fa434faca93bc2d!2sMagic%20Store%20Devoto%20Shopping!5e0!3m2!1ses!2sar!4v1778604170714!5m2!1ses!2sar",
     // ----------------------------------------------------------------------
     horarios: "Lun a Sáb 10:00 – 22:00 · Dom 12:00 – 21:00",
-    instagram: "https://instagram.com/magic.devoto",
+    // Instagram oculto: el handle anterior (magic.devoto) exponía la marca.
+    // Reemplazar por la cuenta nueva cuando la tengan. Vacío = no se muestra el ícono.
+    instagram: "",
     facebook: "",
     tiktok: "",
   },

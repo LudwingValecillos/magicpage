@@ -1,9 +1,10 @@
 import { Nav } from "@/components/sections/Nav";
 import { Footer } from "@/components/sections/Footer";
 import { CheckoutForm } from "@/components/sections/CheckoutForm";
+import { site } from "@/content/site";
 
 export const metadata = {
-  title: "Finalizar compra — Magic",
+  title: `Finalizar compra — ${site.brand}`,
   description: "Completá tus datos para coordinar el pedido por WhatsApp.",
 };
 
