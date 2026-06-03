@@ -78,7 +78,7 @@ export function IntroCurtain() {
               ✦
             </motion.span>
             <span className="font-display text-4xl md:text-5xl font-extrabold text-white tracking-tight">
-              {process.env.NEXT_PUBLIC_APP_NAME}
+              {process.env.NEXT_PUBLIC_BRAND_NAME}
             </span>
 
             {/* sparkles que estallan */}

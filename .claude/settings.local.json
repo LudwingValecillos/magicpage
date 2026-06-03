@@ -21,7 +21,9 @@
       "Bash(rm -f .tmp-assets/*)",
       "Bash(rmdir .tmp-assets)",
       "Bash(rm -f build.log)",
-      "Bash(rm -f PRECIOS-BACKUP-*.json FINAL-precios.csv PREVIEW-precios.csv SUGERENCIAS-match.csv)"
+      "Bash(rm -f PRECIOS-BACKUP-*.json FINAL-precios.csv PREVIEW-precios.csv SUGERENCIAS-match.csv)",
+      "Bash(rm -f NUEVOS-match.csv NUEVOS-aplicados.csv)",
+      "Bash(ls *.csv)"
     ]
   }
 }
