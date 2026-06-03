@@ -20,7 +20,8 @@
       "Bash(python -c \"from PIL import Image; [print\\(f, Image.open\\(f\\).mode, 'alpha' if Image.open\\(f\\).convert\\('RGBA'\\).getextrema\\(\\)[3][0]<255 else 'NO-alpha\\(opaco\\)'\\) for f in ['kuromi.webp','hello-kitty.webp','Sin-titulo-2-03.webp']]\")",
       "Bash(rm -f .tmp-assets/*)",
       "Bash(rmdir .tmp-assets)",
-      "Bash(rm -f build.log)"
+      "Bash(rm -f build.log)",
+      "Bash(rm -f PRECIOS-BACKUP-*.json FINAL-precios.csv PREVIEW-precios.csv SUGERENCIAS-match.csv)"
     ]
   }
 }
