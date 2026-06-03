@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "@/lib/store/StoreProvider";
+import { IntroCurtain } from "@/components/IntroCurtain";
+import { AmbientBackground } from "@/components/AmbientBackground";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CartDrawer } from "@/components/overlays/CartDrawer";
 import { SearchModal } from "@/components/overlays/SearchModal";
@@ -33,6 +35,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" className={`${fredoka.variable} ${nunito.variable}`}>
       <body className="antialiased" suppressHydrationWarning>
         <StoreProvider>
+          <AmbientBackground />
+          <IntroCurtain />
           <SmoothScroll />
           {children}
           <CartDrawer />

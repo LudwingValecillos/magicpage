@@ -16,13 +16,13 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
-        <TrustBadges />
         <Brands />
         <Categories />
         <Featured />
         <Ofertas />
-        <CtaWhatsapp />
+        <TrustBadges />
         <PaymentMethods />
+        <CtaWhatsapp />
         <FaqAccordion />
       </main>
       <Footer />

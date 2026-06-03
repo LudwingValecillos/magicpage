@@ -269,10 +269,23 @@ body.theme-admin {
   from { opacity: 0; transform: scale(1.03); }
   to { opacity: 1; transform: scale(1); }
 }
+/* deriva lenta de los blobs del fondo ambiental */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(4%, -3%) scale(1.07); }
+  66% { transform: translate(-3%, 4%) scale(0.95); }
+}
+/* parpadeo de las estrellitas del fondo */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.12; transform: scale(0.7); }
+  50% { opacity: 0.85; transform: scale(1); }
+}
 
 .float-soft { animation: float-soft 5s ease-in-out infinite; }
 .hover-wiggle:hover { animation: wiggle 0.4s ease-in-out; }
 .pulse-soft { animation: pulse-soft 2.5s ease-in-out infinite; }
+.drift { animation: drift 26s ease-in-out infinite; }
+.twinkle { animation: twinkle 4s ease-in-out infinite; }
 
 /* =====================================================================
    SCROLLBAR
