@@ -98,13 +98,15 @@ export function Hero() {
       ref={sectionRef}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
-      className="relative overflow-hidden pt-32 md:pt-40 pb-20 md:pb-28 px-[var(--gutter)]"
+      className="relative overflow-hidden pt-32 md:pt-40 pb-10 md:pb-14 px-[var(--gutter)]"
       style={{ ["--gutter" as string]: "clamp(1.25rem, 4vw, 3rem)" } as React.CSSProperties}
     >
+      {/* cielo ilustrado de fondo */}
+      <SkyBackdrop reduce={!!reduce} />
+
       {/* blobs suaves */}
-      <div className="pointer-events-none absolute -top-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-[var(--color-sky-soft)]/40 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[30rem] h-[30rem] rounded-full bg-[var(--color-pink-soft)]/40 blur-3xl" />
-      <div className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 w-[22rem] h-[22rem] rounded-full bg-[var(--color-yellow)]/25 blur-3xl" />
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-[var(--color-sky-soft)]/30 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[30rem] h-[30rem] rounded-full bg-[var(--color-pink-soft)]/30 blur-3xl" />
 
       {/* personajes flotando */}
       {CHARS.map((c, i) => (
@@ -265,6 +267,75 @@ function Character({
         </motion.div>
       </motion.div>
     </motion.div>
+  );
+}
+
+/** Cielo ilustrado: gradiente celeste + sol + arcoíris tenue + nubes + base. */
+function SkyBackdrop({ reduce }: { reduce: boolean }) {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* gradiente de cielo (arriba celeste → se funde con la crema abajo) */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, var(--color-sky-tint) 0%, color-mix(in srgb, var(--color-sky-tint) 55%, transparent) 42%, transparent 72%)",
+        }}
+      />
+
+      {/* sol con halo */}
+      <div className="absolute top-[8%] right-[12%] md:right-[16%]">
+        <div
+          className="w-24 h-24 md:w-32 md:h-32 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 50%, var(--color-yellow) 0%, var(--color-yellow) 38%, color-mix(in srgb, var(--color-yellow) 50%, transparent) 60%, transparent 72%)",
+            filter: "blur(1px)",
+          }}
+        />
+      </div>
+
+      {/* arcoíris tenue (anillos de color) */}
+      <div
+        className="absolute -top-28 left-1/2 -translate-x-1/2 w-[44rem] h-[44rem] rounded-full opacity-[0.16]"
+        style={{
+          background:
+            "conic-gradient(from 200deg at 50% 100%, transparent 0deg, var(--color-pink) 18deg, var(--color-yellow) 30deg, var(--color-mint) 42deg, var(--color-sky) 54deg, transparent 72deg)",
+          maskImage: "radial-gradient(circle at 50% 100%, transparent 56%, #000 57%, #000 66%, transparent 67%)",
+          WebkitMaskImage: "radial-gradient(circle at 50% 100%, transparent 56%, #000 57%, #000 66%, transparent 67%)",
+        }}
+      />
+
+      {/* nubes */}
+      <Cloud className="top-[14%] left-[8%]" scale={1} reduce={reduce} delay="0s" />
+      <Cloud className="top-[24%] right-[6%] hidden sm:block" scale={0.8} reduce={reduce} delay="-5s" />
+      <Cloud className="top-[46%] left-[18%] hidden md:block" scale={0.65} reduce={reduce} delay="-9s" />
+      <Cloud className="bottom-[24%] right-[20%] hidden lg:block" scale={0.7} reduce={reduce} delay="-3s" />
+    </div>
+  );
+}
+
+/** Nube CSS: tres bollos blancos sobre una base, con deriva horizontal lenta. */
+function Cloud({
+  className,
+  scale,
+  reduce,
+  delay,
+}: {
+  className: string;
+  scale: number;
+  reduce: boolean;
+  delay: string;
+}) {
+  return (
+    <div
+      className={`absolute ${reduce ? "" : "cloud-drift"} ${className}`}
+      style={{ width: 150 * scale, height: 60 * scale, animationDelay: delay }}
+    >
+      <div className="absolute bottom-0 left-0 w-full h-[55%] rounded-full bg-white shadow-[0_8px_24px_-8px_rgba(61,181,224,0.35)]" />
+      <div className="absolute bottom-[18%] left-[12%] w-[52%] h-full rounded-full bg-white" />
+      <div className="absolute bottom-[12%] right-[10%] w-[44%] h-[80%] rounded-full bg-white" />
+    </div>
   );
 }
 

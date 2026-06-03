@@ -84,6 +84,9 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* evita scroll horizontal por decorados que asoman al costado
+     (SideCharacter). clip no rompe sticky/lenis como overflow:hidden. */
+  overflow-x: clip;
 }
 
 body {
@@ -280,12 +283,18 @@ body.theme-admin {
   0%, 100% { opacity: 0.12; transform: scale(0.7); }
   50% { opacity: 0.85; transform: scale(1); }
 }
+/* deriva horizontal de las nubes del hero */
+@keyframes cloud-x {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(26px); }
+}
 
 .float-soft { animation: float-soft 5s ease-in-out infinite; }
 .hover-wiggle:hover { animation: wiggle 0.4s ease-in-out; }
 .pulse-soft { animation: pulse-soft 2.5s ease-in-out infinite; }
 .drift { animation: drift 26s ease-in-out infinite; }
 .twinkle { animation: twinkle 4s ease-in-out infinite; }
+.cloud-drift { animation: cloud-x 14s ease-in-out infinite; }
 
 /* =====================================================================
    SCROLLBAR
