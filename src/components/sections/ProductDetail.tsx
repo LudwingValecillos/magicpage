@@ -140,6 +140,7 @@ export function ProductDetail({ slug }: { slug: string }) {
                   key={thumb}
                   src={images[thumb].url}
                   alt={product.nombre}
+                  referrerPolicy="no-referrer"
                   className="absolute inset-0 w-full h-full object-cover [animation:fade-img_.4s_var(--ease-out-quart)] transition-transform duration-[600ms] ease-[var(--ease-out-quart)] group-hover:scale-105"
                 />
               ) : (
@@ -175,7 +176,7 @@ export function ProductDetail({ slug }: { slug: string }) {
                     }`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    <img src={img.url} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>

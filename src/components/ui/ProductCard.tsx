@@ -37,6 +37,8 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
           <img
             src={cover}
             alt={product.nombre}
+            referrerPolicy="no-referrer"
+            loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[600ms] ease-[var(--ease-out-quart)] group-hover:scale-[1.07]"
           />
         ) : (

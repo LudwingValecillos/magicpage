@@ -97,6 +97,7 @@ export function SideCharacter({
           <img
             src={src}
             alt=""
+            referrerPolicy="no-referrer"
             loading="lazy"
             className={`${width} h-auto drop-shadow-[0_18px_30px_rgba(28,36,52,0.18)]`}
             style={mirror ? { transform: "scaleX(-1)" } : undefined}

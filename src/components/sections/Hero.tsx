@@ -256,6 +256,7 @@ function Character({
               <img
                 src={char.src}
                 alt={char.name}
+                referrerPolicy="no-referrer"
                 loading="eager"
                 width={char.size}
                 height={char.size}

@@ -164,7 +164,7 @@ export function SearchModal() {
                     >
                       {hit.kind === "product" && hit.cover ? (
                         /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={hit.cover} alt="" className="w-full h-full object-cover" />
+                        <img src={hit.cover} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                       ) : (
                         hit.emoji
                       )}

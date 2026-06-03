@@ -110,6 +110,7 @@ export function Brands() {
                   <img
                     src={b.src}
                     alt={b.nombre}
+                    referrerPolicy="no-referrer"
                     loading="lazy"
                     width={64}
                     height={64}

@@ -97,6 +97,7 @@ export function CartDrawer() {
                         <img
                           src={cover}
                           alt={product.nombre}
+                          referrerPolicy="no-referrer"
                           className="w-full h-full object-cover"
                         />
                       ) : (

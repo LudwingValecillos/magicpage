@@ -269,7 +269,7 @@ export function ProductForm({ initial }: ProductFormProps) {
                     className="relative group rounded-xl overflow-hidden aspect-square border border-[var(--color-rule)]"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    <img src={img.url} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-[var(--color-ink)]/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-2">
                       <button
                         type="button"
