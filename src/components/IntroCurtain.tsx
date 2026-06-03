@@ -35,7 +35,7 @@ export function IntroCurtain() {
     document.body.style.overflow = "hidden";
 
     // duración total de la cortina antes de revelar el home
-    const t = window.setTimeout(() => setShow(false), 1650);
+    const t = window.setTimeout(() => setShow(false), 950);
     return () => {
       window.clearTimeout(t);
       document.body.style.overflow = "";
@@ -54,7 +54,7 @@ export function IntroCurtain() {
           className="fixed inset-0 z-[9999] grid place-items-center overflow-hidden"
           initial={{ y: 0 }}
           exit={{ y: "-100%" }}
-          transition={{ duration: 0.8, ease: EASE }}
+          transition={{ duration: 0.55, ease: EASE }}
           style={{
             background:
               "linear-gradient(145deg, var(--color-sky) 0%, var(--color-sky-deep) 45%, var(--color-pink) 110%)",
@@ -68,12 +68,12 @@ export function IntroCurtain() {
             className="relative flex flex-col items-center gap-4"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.55, ease: [0.23, 1, 0.32, 1], delay: 0.05 }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           >
             <motion.span
               className="w-20 h-20 md:w-24 md:h-24 rounded-[1.6rem] bg-white grid place-items-center text-4xl md:text-5xl text-[var(--color-sky-deep)] shadow-2xl"
               animate={{ rotate: [0, -8, 8, 0] }}
-              transition={{ duration: 0.7, ease: "easeInOut", delay: 0.3 }}
+              transition={{ duration: 0.5, ease: "easeInOut", delay: 0.18 }}
             >
               ✦
             </motion.span>
@@ -95,7 +95,7 @@ export function IntroCurtain() {
                     y: Math.sin(angle) * 90,
                     scale: [0, 1.1, 0.6],
                   }}
-                  transition={{ duration: 0.9, delay: 0.45, ease: "easeOut" }}
+                  transition={{ duration: 0.7, delay: 0.28, ease: "easeOut" }}
                 >
                   ✨
                 </motion.span>
