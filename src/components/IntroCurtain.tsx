@@ -57,12 +57,12 @@ export function IntroCurtain() {
           transition={{ duration: 0.55, ease: EASE }}
           style={{
             background:
-              "linear-gradient(145deg, var(--color-sky) 0%, var(--color-sky-deep) 45%, var(--color-pink) 110%)",
+              "linear-gradient(150deg, var(--color-sky-tint) 0%, var(--color-bg) 50%, var(--color-pink-tint) 100%)",
           }}
         >
           {/* blobs suaves de fondo */}
-          <div className="pointer-events-none absolute -top-24 -left-24 w-[26rem] h-[26rem] rounded-full bg-white/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-[var(--color-yellow)]/30 blur-3xl" />
+          <div className="pointer-events-none absolute -top-24 -left-24 w-[26rem] h-[26rem] rounded-full bg-[var(--color-sky)]/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-[var(--color-pink)]/15 blur-3xl" />
 
           <motion.div
             className="relative flex flex-col items-center gap-5"
@@ -73,12 +73,15 @@ export function IntroCurtain() {
             <motion.img
               src="/brand/fantasy-icon.png"
               alt={process.env.NEXT_PUBLIC_BRAND_NAME}
-              className="w-24 h-24 md:w-28 md:h-28 rounded-[1.6rem] shadow-2xl"
+              className="w-24 h-24 md:w-28 md:h-28 rounded-[1.6rem] bg-white p-1.5 shadow-2xl"
               animate={{ rotate: [0, -8, 8, 0] }}
               transition={{ duration: 0.5, ease: "easeInOut", delay: 0.18 }}
             />
-            <span className="font-display text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-md">
-              {process.env.NEXT_PUBLIC_BRAND_NAME}
+            <span className="font-display text-4xl md:text-5xl font-extrabold tracking-tight">
+              <span className="bg-gradient-to-r from-[var(--color-sky)] via-[var(--color-pink)] to-[var(--color-pink-deep)] bg-clip-text text-transparent">
+                Fantasy
+              </span>{" "}
+              <span className="text-[var(--color-ink)]">Store</span>
             </span>
 
             {/* sparkles que estallan */}

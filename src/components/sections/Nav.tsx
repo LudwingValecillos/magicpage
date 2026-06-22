@@ -54,13 +54,14 @@ export function Nav() {
             alt={site.brand}
             width={36}
             height={36}
-            className="w-9 h-9 rounded-2xl shadow-[var(--shadow-soft)] group-hover:rotate-6 transition-transform"
+            className="w-9 h-9 rounded-2xl bg-white p-0.5 shadow-[var(--shadow-soft)] group-hover:rotate-6 transition-transform"
           />
-          <img
-            src="/brand/fantasy-wordmark.png"
-            alt={site.brand}
-            className="h-7 md:h-8 w-auto"
-          />
+          <span className="font-display text-xl font-extrabold tracking-tight leading-none">
+            <span className="bg-gradient-to-r from-[var(--color-sky)] via-[var(--color-pink)] to-[var(--color-pink-deep)] bg-clip-text text-transparent">
+              Fantasy
+            </span>{" "}
+            <span className="text-[var(--color-ink)]">Store</span>
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
