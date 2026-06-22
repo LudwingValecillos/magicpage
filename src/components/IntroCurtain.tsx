@@ -73,7 +73,7 @@ export function IntroCurtain() {
             <motion.img
               src="/brand/fantasy-icon.png"
               alt={process.env.NEXT_PUBLIC_BRAND_NAME}
-              className="w-24 h-24 md:w-28 md:h-28 rounded-[1.6rem] shadow-2xl"
+              className="w-24 h-24 md:w-28 md:h-28 rounded-[1.6rem] bg-[var(--color-bg)] p-1.5 shadow-2xl"
               animate={{ rotate: [0, -8, 8, 0] }}
               transition={{ duration: 0.5, ease: "easeInOut", delay: 0.18 }}
             />
