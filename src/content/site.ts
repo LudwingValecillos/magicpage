@@ -27,7 +27,7 @@ export const site = {
 
   hero: {
     // Antes: "Tienda Título · Shopping Devoto" — se quitó la mención al lugar físico.
-    eyebrow: "Tienda Título",
+    eyebrow: "",
     headline: ["Productos oficiales", "Disney y Marvel."],
     sub: "Ropa, juguetes y accesorios para los más chicos. Curado con cariño.",
     primaryCta: { label: "Ver catálogo", href: "/catalogo" },
@@ -121,7 +121,7 @@ export const site = {
 
   footer: {
     // Antes: "... · Tienda Título Shopping Devoto" — se quitó la mención al lugar.
-    legal: `© ${new Date().getFullYear()} · Tienda Título`,
+    legal: `© ${new Date().getFullYear()} · ${process.env.NEXT_PUBLIC_BRAND_NAME ?? "Fantasy Store"}`,
   },
 } as const;
 

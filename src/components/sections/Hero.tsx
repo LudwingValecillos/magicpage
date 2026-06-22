@@ -128,15 +128,7 @@ export function Hero() {
         initial="hidden"
         animate={animate}
       >
-        <motion.span
-          variants={item}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--color-sky-tint)] border border-[var(--color-sky-soft)] text-[var(--color-sky-deep)] text-xs font-bold uppercase tracking-wider"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-sky)] pulse-soft" />
-          {site.hero.eyebrow}
-        </motion.span>
-
-        <h1 className="display-tight text-[clamp(2.5rem,8vw,6rem)] leading-[0.95]">
+        <h1 className="display-tight text-[clamp(2.5rem,8vw,6rem)] leading-[1.04] pb-[0.08em]">
           <span className="block text-[var(--color-ink)]">
             <Words text={site.hero.headline[0]} />
           </span>

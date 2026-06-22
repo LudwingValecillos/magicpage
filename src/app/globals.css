@@ -206,6 +206,10 @@ body.theme-admin {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  /* evita que el clip recorte descendentes (cola de la "y") */
+  line-height: 1.1;
+  padding-bottom: 0.08em;
+  display: inline-block;
 }
 
 /* =====================================================================
