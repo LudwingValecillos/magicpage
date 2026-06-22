@@ -49,12 +49,18 @@ export function Nav() {
     >
       <div className="flex items-center justify-between px-3 md:px-5 py-2.5">
         <Link href="/" className="flex items-center gap-2 group" onClick={() => setOpen(false)}>
-          <span className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[var(--color-sky)] to-[var(--color-pink)] grid place-items-center text-base text-white shadow-[var(--shadow-soft)] group-hover:rotate-6 transition-transform">
-            ✦
-          </span>
-          <span className="font-display text-xl text-[var(--color-ink)]">
-            {site.brand}
-          </span>
+          <img
+            src="/brand/fantasy-icon.png"
+            alt={site.brand}
+            width={36}
+            height={36}
+            className="w-9 h-9 rounded-2xl shadow-[var(--shadow-soft)] group-hover:rotate-6 transition-transform"
+          />
+          <img
+            src="/brand/fantasy-wordmark.png"
+            alt={site.brand}
+            className="h-7 md:h-8 w-auto"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

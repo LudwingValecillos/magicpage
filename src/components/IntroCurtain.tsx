@@ -65,19 +65,19 @@ export function IntroCurtain() {
           <div className="pointer-events-none absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-[var(--color-yellow)]/30 blur-3xl" />
 
           <motion.div
-            className="relative flex flex-col items-center gap-4"
+            className="relative flex flex-col items-center gap-5"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           >
-            <motion.span
-              className="w-20 h-20 md:w-24 md:h-24 rounded-[1.6rem] bg-white grid place-items-center text-4xl md:text-5xl text-[var(--color-sky-deep)] shadow-2xl"
+            <motion.img
+              src="/brand/fantasy-icon.png"
+              alt={process.env.NEXT_PUBLIC_BRAND_NAME}
+              className="w-24 h-24 md:w-28 md:h-28 rounded-[1.6rem] shadow-2xl"
               animate={{ rotate: [0, -8, 8, 0] }}
               transition={{ duration: 0.5, ease: "easeInOut", delay: 0.18 }}
-            >
-              ✦
-            </motion.span>
-            <span className="font-display text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+            />
+            <span className="font-display text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-md">
               {process.env.NEXT_PUBLIC_BRAND_NAME}
             </span>
 

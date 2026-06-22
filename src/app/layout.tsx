@@ -28,6 +28,13 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: `${site.brand} — ${site.tagline}`,
   description: site.tagline,
+  icons: {
+    icon: [
+      { url: "/brand/fantasy-icon.png", type: "image/png" },
+    ],
+    shortcut: "/brand/fantasy-icon.png",
+    apple: "/brand/fantasy-icon.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
