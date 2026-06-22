@@ -29,7 +29,7 @@ export const site = {
     // Antes: "Tienda Título · Shopping Devoto" — se quitó la mención al lugar físico.
     eyebrow: "",
     headline: ["Productos oficiales", "Disney y Marvel."],
-    sub: "Ropa, juguetes y accesorios para los más chicos. Curado con cariño.",
+    sub: "Ropa, juguetes y accesorios para los más chicos.",
     primaryCta: { label: "Ver catálogo", href: "/catalogo" },
     secondaryCta: { label: "Ver ofertas", href: "/catalogo?oferta=1" },
   },
