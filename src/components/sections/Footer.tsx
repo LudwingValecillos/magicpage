@@ -30,10 +30,19 @@ export function Footer() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
         <Reveal y={24}>
           <Link href="/" className="inline-flex items-center gap-2 group">
-            <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[var(--color-sky)] to-[var(--color-pink)] grid place-items-center text-base text-white shadow-[var(--shadow-soft)] group-hover:rotate-6 transition-transform">
-              ✦
+            <img
+              src="/brand/fantasy-icon.webp"
+              alt={site.brand}
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-2xl shadow-[var(--shadow-soft)] group-hover:rotate-6 transition-transform"
+            />
+            <span className="font-display text-2xl font-extrabold tracking-tight leading-none">
+              <span className="bg-gradient-to-r from-[var(--color-sky)] via-[var(--color-pink)] to-[var(--color-pink-deep)] bg-clip-text text-transparent">
+                Fantasy
+              </span>{" "}
+              <span className="text-[var(--color-ink)]">Store</span>
             </span>
-            <span className="font-display text-2xl text-[var(--color-ink)]">{site.brand}</span>
           </Link>
           <p className="mt-4 text-[var(--color-ink-soft)] max-w-md leading-relaxed">
             {site.tagline}

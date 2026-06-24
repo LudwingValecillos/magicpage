@@ -30,6 +30,7 @@ export const metadata: Metadata = {
   description: site.tagline,
   icons: {
     icon: [
+      { url: "/brand/fantasy-icon.webp", type: "image/webp" },
       { url: "/brand/fantasy-icon.png", type: "image/png" },
     ],
     shortcut: "/brand/fantasy-icon.png",

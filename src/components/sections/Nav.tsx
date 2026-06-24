@@ -50,7 +50,7 @@ export function Nav() {
       <div className="flex items-center justify-between px-3 md:px-5 py-2.5">
         <Link href="/" className="flex items-center gap-2 group" onClick={() => setOpen(false)}>
           <img
-            src="/brand/fantasy-icon.png"
+            src="/brand/fantasy-icon.webp"
             alt={site.brand}
             width={36}
             height={36}
