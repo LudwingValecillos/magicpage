@@ -15,6 +15,9 @@ interface StoreState {
   cart: CartItem[];
   session: AdminSession | null;
 
+  /** Número de WhatsApp activo (de la DB, con fallback al env). */
+  whatsappNumber: string;
+
   cartOpen: boolean;
   searchOpen: boolean;
   loginOpen: boolean;
@@ -38,6 +41,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [products, setProductsState] = useState<Product[]>([]);
   const [cart, setCartState] = useState<CartItem[]>([]);
   const [session, setSessionState] = useState<AdminSession | null>(null);
+  const [whatsappNumber, setWhatsappNumber] = useState<string>(
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
+  );
 
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -57,6 +63,19 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       setSessionState(s);
       setReady(true);
     })();
+
+    // Número de WhatsApp desde la DB (no bloquea el render; si falla, queda el del env)
+    (async () => {
+      try {
+        const res = await fetch("/api/settings", { cache: "no-store" });
+        if (!res.ok) return;
+        const json = (await res.json()) as { whatsappNumber?: string };
+        if (alive && json.whatsappNumber) setWhatsappNumber(json.whatsappNumber);
+      } catch {
+        /* fallback: env */
+      }
+    })();
+
     return () => {
       alive = false;
     };
@@ -81,6 +100,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       products,
       cart,
       session,
+      whatsappNumber,
       cartOpen,
       searchOpen,
       loginOpen,
@@ -94,7 +114,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       openLogin: () => setLoginOpen(true),
       closeLogin: () => setLoginOpen(false),
     }),
-    [ready, products, cart, session, cartOpen, searchOpen, loginOpen, setProducts, setCart, setSession],
+    [ready, products, cart, session, whatsappNumber, cartOpen, searchOpen, loginOpen, setProducts, setCart, setSession],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

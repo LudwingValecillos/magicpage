@@ -14,10 +14,12 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { useProducts } from "@/lib/store/useProducts";
 import { useCart } from "@/lib/store/useCart";
 import { useStore } from "@/lib/store/StoreProvider";
-import { productInquiry, whatsappLink } from "@/lib/whatsapp";
+import { productInquiry } from "@/lib/whatsapp";
+import { useWhatsapp } from "@/lib/useWhatsapp";
 import { site } from "@/content/site";
 
 export function ProductDetail({ slug }: { slug: string }) {
+  const { link } = useWhatsapp();
   const { ready } = useStore();
   const { findBySlug, visibles } = useProducts();
   const { add, open: openCart } = useCart();
@@ -283,7 +285,7 @@ export function ProductDetail({ slug }: { slug: string }) {
               </div>
 
               <a
-                href={whatsappLink(productInquiry(product))}
+                href={link(productInquiry(product))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-3 inline-flex w-full items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#25D366] text-white font-semibold shadow-[0_10px_24px_-10px_rgba(37,211,102,0.55)] hover:bg-[#1ebe57] transition-colors"

@@ -9,9 +9,11 @@ import { Reveal } from "@/components/Reveal";
 // MapEmbed oculto por pedido del cliente (ubicación física). Reactivar a futuro:
 // import { MapEmbed } from "./MapEmbed";
 import { site } from "@/content/site";
-import { genericInquiry, whatsappLink, WHATSAPP_NUMBER } from "@/lib/whatsapp";
+import { genericInquiry } from "@/lib/whatsapp";
+import { useWhatsapp } from "@/lib/useWhatsapp";
 
 export function Footer() {
+  const { link, hasNumber } = useWhatsapp();
   type Social = { label: string; href: string; icon: string };
   const socials = (
     [
@@ -61,9 +63,9 @@ export function Footer() {
               <span aria-hidden>🕒</span>
               <span>{site.local.horarios}</span>
             </div>
-            {WHATSAPP_NUMBER && (
+            {hasNumber && (
               <a
-                href={whatsappLink(genericInquiry())}
+                href={link(genericInquiry())}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-[var(--color-sky-deep)] font-semibold hover:underline"
@@ -107,9 +109,9 @@ export function Footer() {
               Coordinamos pago y entrega directamente por chat. Escribinos y te
               respondemos a la brevedad.
             </p>
-            {WHATSAPP_NUMBER && (
+            {hasNumber && (
               <a
-                href={whatsappLink(genericInquiry())}
+                href={link(genericInquiry())}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-semibold text-white bg-[#25D366] shadow-[0_10px_24px_-10px_rgba(37,211,102,0.55)] hover:bg-[#1ebe57] transition-colors"

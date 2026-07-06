@@ -5,9 +5,11 @@
  */
 
 import { Reveal } from "@/components/Reveal";
-import { genericInquiry, whatsappLink } from "@/lib/whatsapp";
+import { genericInquiry } from "@/lib/whatsapp";
+import { useWhatsapp } from "@/lib/useWhatsapp";
 
 export function CtaWhatsapp() {
+  const { link } = useWhatsapp();
   return (
     <section
       className="relative px-[var(--gutter)] py-[var(--section)]"
@@ -32,7 +34,7 @@ export function CtaWhatsapp() {
               Escribinos por WhatsApp y te ayudamos a encontrar el regalo perfecto.
             </p>
             <a
-              href={whatsappLink(genericInquiry())}
+              href={link(genericInquiry())}
               target="_blank"
               rel="noopener noreferrer"
               className="relative inline-flex items-center gap-2 mt-6 px-7 py-3.5 rounded-full font-bold bg-white text-[var(--color-sky-deep)] shadow-[var(--shadow-soft)] hover:scale-105 transition-transform"

@@ -10,7 +10,8 @@ import { useEffect } from "react";
 import { useCart } from "@/lib/store/useCart";
 import { useStore } from "@/lib/store/StoreProvider";
 import { MagicButton } from "@/components/ui/MagicButton";
-import { checkoutMessageFromCart, whatsappLink } from "@/lib/whatsapp";
+import { checkoutMessageFromCart } from "@/lib/whatsapp";
+import { useWhatsapp } from "@/lib/useWhatsapp";
 import { site } from "@/content/site";
 
 export function CartDrawer() {
@@ -28,7 +29,8 @@ export function CartDrawer() {
     };
   }, [isOpen, close]);
 
-  const checkoutHref = whatsappLink(
+  const { link } = useWhatsapp();
+  const checkoutHref = link(
     checkoutMessageFromCart(
       { nombre: "—", telefono: "—", entrega: "retiro", pago: "otra" },
       cart,

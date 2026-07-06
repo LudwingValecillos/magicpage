@@ -10,10 +10,13 @@ import type { CartItem, CheckoutData, Product } from "@/lib/store/types";
 
 export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
 
-export function whatsappLink(message: string): string {
-  const base = WHATSAPP_NUMBER
-    ? `https://wa.me/${WHATSAPP_NUMBER}`
-    : "https://wa.me/";
+/**
+ * Construye el link de WhatsApp. El número es opcional: si no se pasa, usa el
+ * del env (compatibilidad). En la app, pasá el número dinámico del store.
+ */
+export function whatsappLink(message: string, number?: string): string {
+  const num = (number ?? WHATSAPP_NUMBER).trim();
+  const base = num ? `https://wa.me/${num}` : "https://wa.me/";
   return `${base}?text=${encodeURIComponent(message)}`;
 }
 

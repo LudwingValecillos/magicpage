@@ -6,15 +6,18 @@
  */
 
 import { usePathname } from "next/navigation";
-import { genericInquiry, whatsappLink } from "@/lib/whatsapp";
+import { genericInquiry } from "@/lib/whatsapp";
+import { useWhatsapp } from "@/lib/useWhatsapp";
 
 export function FloatingWhatsapp() {
   const pathname = usePathname();
+  const { link } = useWhatsapp();
+
   if (pathname?.startsWith("/admin")) return null;
   if (pathname?.startsWith("/checkout")) return null;
   if (pathname?.startsWith("/login")) return null;
 
-  const href = whatsappLink(genericInquiry());
+  const href = link(genericInquiry());
 
   return (
     <a

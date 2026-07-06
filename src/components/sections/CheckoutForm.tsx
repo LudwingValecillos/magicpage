@@ -8,13 +8,15 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/store/useCart";
-import { checkoutMessage, whatsappLink, WHATSAPP_NUMBER } from "@/lib/whatsapp";
+import { checkoutMessage } from "@/lib/whatsapp";
+import { useWhatsapp } from "@/lib/useWhatsapp";
 import type { CheckoutData } from "@/lib/store/types";
 import { MagicButton } from "@/components/ui/MagicButton";
 
 type Done = { nombre: string; count: number; total: number; url: string };
 
 export function CheckoutForm() {
+  const { link, hasNumber } = useWhatsapp();
   const { items, count, subtotal, clear } = useCart();
 
   const [data, setData] = useState<CheckoutData>({
@@ -118,10 +120,10 @@ export function CheckoutForm() {
     if (data.entrega === "envio" && !data.direccion?.trim()) {
       return setError("Indicá la dirección de envío.");
     }
-    if (!WHATSAPP_NUMBER) {
+    if (!hasNumber) {
       return setError("El número de WhatsApp del negocio no está configurado.");
     }
-    const url = whatsappLink(message);
+    const url = link(message);
     window.open(url, "_blank", "noopener,noreferrer");
     setDone({ nombre: data.nombre, count, total: subtotal, url });
     clear();
