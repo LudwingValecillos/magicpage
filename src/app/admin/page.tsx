@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { useProducts } from "@/lib/store/useProducts";
 import { resetStore } from "@/lib/store/adapter";
+import { WhatsappSettingsCard } from "@/components/admin/WhatsappSettingsCard";
 
 export default function AdminDashboardPage() {
   const { all, visibles } = useProducts();
@@ -59,6 +60,7 @@ export default function AdminDashboardPage() {
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
         <Shortcut href="/admin/productos" title="Gestionar productos" sub="Crear, editar, ofertar" icon="🛍️" />
         <Shortcut href="/admin/productos/nuevo" title="Nuevo producto" sub="Agregar al catálogo" icon="➕" />
+        <WhatsappSettingsCard />
       </div>
     </div>
   );

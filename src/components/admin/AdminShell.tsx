@@ -17,7 +17,6 @@ import { useStore } from "@/lib/store/StoreProvider";
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: "📊" },
   { href: "/admin/productos", label: "Productos", icon: "🛍️" },
-  { href: "/admin/configuracion", label: "Configuración", icon: "⚙️" },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
